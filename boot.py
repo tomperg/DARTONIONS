@@ -5,8 +5,8 @@ import time
 esp.osdebug(None)
 gc.collect()
 
-ssid = 'A1-Mesh-WLAN-a9de7'
-password = '54114678025427959546'
+ssid = ''
+password = ''
 
 station = network.WLAN(network.STA_IF)
 
