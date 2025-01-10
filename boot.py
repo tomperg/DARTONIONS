@@ -5,8 +5,8 @@ import time
 esp.osdebug(None)
 gc.collect()
 
-ssid = ''
-password = ''
+ssid = 'iPhone von Amelie'
+password ="123456789"
 
 station = network.WLAN(network.STA_IF)
 

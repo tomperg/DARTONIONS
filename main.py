@@ -1,5 +1,5 @@
 from machine import I2C, Pin
-import usoket as socket
+import socket
 from ADXL345 import ADXL345_I2C
 from functions import calculate_angles
 import math
@@ -21,7 +21,6 @@ def calculate_velocity(acceleration, delta_time):
     return acceleration * delta_time
 
 def web_page():
-
     f = open('index.html')
     html = f.read()
     f.close()
