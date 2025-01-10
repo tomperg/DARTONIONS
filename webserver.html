@@ -2,46 +2,96 @@
 <html>
   <head>
     <style>
-      body {
-        background: linear-gradient(
-          rgba(255, 255, 255, 0.2),
-          rgba(255, 255, 255, 0.2)
-        );
-        background-image: url("/img/background2.jpg");
-        background-size: cover;
-      }
-      #allDartsCounterPlayerOne {
-        font-size: 50px;
-      }
-      #allDartsCounterPlayerTwo {
-        font-size: 50px;
-      }
-      #doubleInPlayerOne {
-        color: white;
-      }
-      #doubleOutPlayerOne {
-        color: white;
+   body {
+  background: linear-gradient(to right, #f0f4f8, #d9e2ec);
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
 
-      }
-      #doubleInPlayerTwo {
-        color: white;
+#allDartsCounterPlayerOne, #allDartsCounterPlayerTwo {
+  font-size: 50px;
+  color: #2c3e50;
+  text-align: center;
+  margin: 20px 0;
+}
 
-      }
-      #doubleOutPlayerTwo {
-        color: white;
+#doubleInPlayerOne, #doubleOutPlayerOne,
+#doubleInPlayerTwo, #doubleOutPlayerTwo {
+  color: #2c3e50;
+  font-size: 18px;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  background-color: #ecf0f1;
+  display: inline-block;
+  margin: 10px;
+}
 
-      }
-      #roundNumber {
-        position: absolute;
-        width: 2cm;
-        padding-left: 9mm;
-        right: 0.8cm;
-        top: -10mm;
-        color: white;
-        font-size: 2cm;
-        border-radius: 0.5cm;
-        background-color:rgba(233, 208, 208, 0.2);
-      }
+#roundNumber {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  right: 20px;
+  top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  font-size: 24px;
+  border-radius: 50%;
+  background-color: rgba(52, 152, 219, 0.8);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Zusätzliche Stile für ein besseres Design */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 36px;
+  color: #34495e;
+  margin-bottom: 20px;
+}
+
+button {
+  font-size: 16px;
+  color: #fff;
+  background-color: #3498db;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+/* Responsives Design */
+@media (max-width: 600px) {
+  #roundNumber {
+    width: 70px;
+    height: 70px;
+    font-size: 18px;
+  }
+
+  #allDartsCounterPlayerOne, #allDartsCounterPlayerTwo {
+    font-size: 36px;
+  }
+
+  h1 {
+    font-size: 28px;
+  }
+}
+
     </style>
     <link rel="stylesheet" href="/css/dartcounter.css" />
     <link rel="stylesheet" href="/css/buttonnumbersingles.css" />
@@ -74,20 +124,6 @@
     </button>
     <h2 id="roundNumber">1</h2>
     <h2 class="nextPlayer" id="nextPlayer"></h2>
-    <img
-      class="scoreboard"
-      src="/img/grünetafel.jpg"
-      alt=""
-      width="500"
-      height="595"
-    />
-    <img
-      class="dartscheibe"
-      src="/img/dartscheibetest.png"
-      alt=""
-      width="700"
-      height="700"
-    />
     <form action="/playerx01.html" method="POST">
       <div class='form-uname'>
         
@@ -181,5 +217,5 @@
       <button type="button" class="buttonnumbertriple" id="triple20">60</button>
     </div>
   </body>
-  <script src="/js/x01.js"></script>
+  <script src="webserver.js"></script>
 </html>
