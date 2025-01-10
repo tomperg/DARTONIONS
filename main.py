@@ -1,4 +1,5 @@
 from machine import I2C, Pin
+import usoket as socket
 from ADXL345 import ADXL345_I2C
 from functions import calculate_angles
 import math
@@ -18,6 +19,16 @@ prev_time = time.ticks_ms()
 
 def calculate_velocity(acceleration, delta_time):
     return acceleration * delta_time
+
+def web_page():
+
+    f = open('index.html')
+    html = f.read()
+    f.close()
+    return html
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 80))
+s.listen(5)
 
 while True:
     # Beschleunigungswerte auslesen
@@ -41,5 +52,28 @@ while True:
     # Ausgabe
     print(f"Pitch: {pitch:.2f}°, Roll: {roll:.2f}°")
     print(f"Velocity: X: {velocity_x:.2f} m/s, Y: {velocity_y:.2f} m/s, Z: {velocity_z:.2f} m/s")
+
+
+    conn, addr = s.accept()
+
+    request = conn.recv(1024)
+    request = str(request)
+
+    start_index = request.find("MSGBGN")
+    end_index = request.find("MSGEND")
+    value = request[start_index+len("MSGBGN"):end_index]
+
+    try:
+        led_value = int(value)
+    
+    except Exception as e:
+        print("Invalid value received, Ignored")
+
+    response = web_page()
+    conn.send('HTTP/1.1 200 OK\n')
+    conn.send('Content-Type: text/html\n')
+    conn.send('Connection: close\n\n')
+    conn.sendall(response)
+    conn.close()
 
     time.sleep(0.01)
