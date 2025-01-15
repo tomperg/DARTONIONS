@@ -1,4 +1,5 @@
-import gc
+# boot.py -- run on boot-up
+'''import gc
 import network
 import esp
 import time
@@ -6,7 +7,7 @@ esp.osdebug(None)
 gc.collect()
 
 ssid = 'iPhone von Amelie'
-password ="123456789"
+password =""
 
 station = network.WLAN(network.STA_IF)
 
@@ -19,4 +20,4 @@ while not station.isconnected():
     time.sleep(1)
 
 print('Connection successful')
-print(station.ifconfig())
+print(station.ifconfig())'''
