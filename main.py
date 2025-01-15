@@ -48,8 +48,12 @@ prev_x_corrected, prev_y_corrected, prev_z_corrected = 0, 0, 0
 
 while True:
     # Beschleunigungswerte auslesen
-    x, y, z = abs(imu.xValue), abs(imu.yValue), abs(imu.zValue)
+    x, y, z = imu.xValue*0.039, imu.yValue*0.039, imu.zValue*0.039
     print(f"X: {x}, Y: {y}, Z: {z}")
+
+    #Berechnung der Beschleunigung der einzelnen Achsen 
+
+
     imu_ges = math.sqrt(x**2 + y**2 + z**2)
 
     current_time = time.ticks_ms()
