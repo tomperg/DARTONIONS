@@ -44,8 +44,8 @@ def calculate_velocity(acceleration, delta_time):
 prev_x_corrected, prev_y_corrected, prev_z_corrected = 0, 0, 0
 while True:
     # Beschleunigungswerte auslesen
-    x, y, z = imu.xValue*0.039, imu.yValue*0.039, imu.zValue*0.039 -1.5 #offset
-    #print(f"Z: {z}")
+    x, y, z = imu.xValue*0.039, imu.yValue*0.039+0.7 , imu.zValue*0.039 -1.5 #offset
+    print(f"X: {x}")
 
     #Berechnung der Beschleunigung der einzelnen Achsen 
 
@@ -54,6 +54,7 @@ while True:
 
     current_time = time.ticks_ms()
     delta_time = time.ticks_diff(current_time, prev_time) / 1000.0
+    print(f"Delta Time: {delta_time:.2f}")
     prev_time = current_time
 
     pitch, roll = calculate_angles(x, y, z)
@@ -89,8 +90,8 @@ while True:
         velocity_z += calculate_velocity(az, dt)
 
     # Gesamtgeschwindigkeit als Vektor
-    velocity_ges = math.sqrt(velocity_x**2 + velocity_y**2 + velocity_z**2)
+    velocity_ges = math.sqrt(velocity_x**2 + velocity_y**2 + velocity_z**2) #offset
 
-    print(f"Velocity: {velocity_ges:.2f} m/s")
+    #print(f"Velocity: {velocity_ges:.2f} m/s")
 
-    time.sleep(1)
+    time.sleep(0.01)
