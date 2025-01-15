@@ -15,6 +15,7 @@ velocity_z = 0.0
 
 # Zeitvariable für Integration
 prev_time = time.ticks_ms()
+acceleration_history = []
 
 def calculate_velocity(acceleration, delta_time):
     velocity = acceleration*delta_time
@@ -39,17 +40,12 @@ def calculate_velocity(acceleration, delta_time):
     # Numerische Integration zur Geschwindigkeitsberechnung
     return acceleration * delta_time
 
-def high_pass_filter(value, prev_value, alpha=0.8):
-    # High-Pass-Filter zur Reduktion von Schwerkraftanteilen
-    return alpha * (prev_value + value)
-
 # Initialisierte Werte für den Filter
 prev_x_corrected, prev_y_corrected, prev_z_corrected = 0, 0, 0
-
 while True:
     # Beschleunigungswerte auslesen
-    x, y, z = imu.xValue*0.039, imu.yValue*0.039, imu.zValue*0.039
-    print(f"X: {x}, Y: {y}, Z: {z}")
+    x, y, z = imu.xValue*0.039, imu.yValue*0.039, imu.zValue*0.039 -1.5 #offset
+    #print(f"Z: {z}")
 
     #Berechnung der Beschleunigung der einzelnen Achsen 
 
@@ -64,33 +60,37 @@ while True:
 
     # Schwerkraftkompensation
     gravity_x = 9.81 * math.sin(math.radians(pitch))
-    gravity_y = -9.81 * math.sin(math.radians(roll))
+    gravity_y = 9.81 * math.sin(math.radians(roll))
     gravity_z = 9.81 * math.cos(math.radians(pitch)) * math.cos(math.radians(roll))
-
+    #print(gravity_z)
     x_corrected = x - gravity_x
     y_corrected = y - gravity_y
-    z_corrected = z - gravity_z
+    if z < 0:
+        z_corrected = z + gravity_z
+    else: 
+        z_corrected = z - gravity_z
+    #print(z_corrected)
 
     gravity_ges = math.sqrt(gravity_x**2 + gravity_y**2 + gravity_z**2)
 
-    print(f"X: {gravity_x}, Y: {gravity_y}, Z: {gravity_z}")
-    print(f"Gravity: {gravity_ges:.2f} m/s^2")
-    # High-Pass-Filter anwenden
-    x_filtered = high_pass_filter(x_corrected, prev_x_corrected)
-    y_filtered = high_pass_filter(y_corrected, prev_y_corrected)
-    z_filtered = high_pass_filter(z_corrected, prev_z_corrected)
+    accelaration_ges = math.sqrt(x_corrected**2 + y_corrected**2 + z_corrected**2)
+        # Beschleunigungswerte speichern
+    acceleration_history.append((x_corrected, y_corrected, z_corrected, delta_time))
+    if len(acceleration_history) > 20:
+        acceleration_history.pop(0)
 
-    prev_x_corrected, prev_y_corrected, prev_z_corrected = x_filtered, y_filtered, z_filtered
+    # Geschwindigkeit über die letzten 20 Werte berechnen
+    velocity_x = 0.0
+    velocity_y = 0.0
+    velocity_z = 0.0
+    for ax, ay, az, dt in acceleration_history:
+        velocity_x += calculate_velocity(ax, dt)
+        velocity_y += calculate_velocity(ay, dt)
+        velocity_z += calculate_velocity(az, dt)
 
-    # Geschwindigkeit berechnen
-    velocity_x += calculate_velocity(x_filtered, delta_time)
-    velocity_y += calculate_velocity(y_filtered, delta_time)
-    velocity_z += calculate_velocity(z_filtered, delta_time)
-
+    # Gesamtgeschwindigkeit als Vektor
     velocity_ges = math.sqrt(velocity_x**2 + velocity_y**2 + velocity_z**2)
 
-    #print(f"Pitch: {pitch:.2f}°, Roll: {roll:.2f}°")
-    #print(f"Velocity: X: {velocity_x:.2f} m/s, Y: {velocity_y:.2f} m/s, Z: {velocity_z:.2f} m/s")
-    #print(f"Gesamtgeschwindigkeit: {velocity_ges:.2f} m/s")
+    print(f"Velocity: {velocity_ges:.2f} m/s")
 
-    time.sleep(0.1)
+    time.sleep(1)
