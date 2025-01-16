@@ -3,6 +3,7 @@ import socket
 from ADXL345 import ADXL345_I2C
 import math
 import time
+from functions import calculate_yaw
 
 # I2C initialisieren
 i2c = I2C(0, sda=Pin(21), scl=Pin(22))
@@ -90,8 +91,11 @@ try:
 
             # Gesamtgeschwindigkeit als Vektor
             velocity_ges = math.sqrt(velocity_x**2 + velocity_y**2 + velocity_z**2) #offset
-
             #print(f"Velocity: {velocity_ges:.2f} m/s")
+
+            #Yaw Winkel mit den korrigierten Beschleunigungswerten berechnen
+            yaw = calculate_yaw(x_corrected, y_corrected, z_corrected)
+            #print(f"Yaw: {yaw:.2f}°")
 
             time.sleep(0.01)
 except KeyboardInterrupt: 
