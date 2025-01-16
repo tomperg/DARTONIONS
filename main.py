@@ -21,10 +21,6 @@ prev_time = time.ticks_ms()
 acceleration_history = []
 
 def calculate_velocity(acceleration, delta_time):
-    velocity = acceleration*delta_time
-    return velocity
-
-def calculate_velocity(acceleration, delta_time):
     # Numerische Integration zur Geschwindigkeitsberechnung
     return acceleration * delta_time
 
@@ -48,7 +44,7 @@ try:
             print(f"Delta Time: {delta_time:.2f}")
             prev_time = current_time
 
-            pitch, roll = imu.RP_calculate(x, y, z)
+            pitch, roll = imu.RP_calculate(x, y, z) #Pitch (X-Achse) und Roll (Y-Achse) Winkel berechnen
 
             # Schwerkraftkompensation anhand pitch und roll Winkel
             gravity_x = 9.81 * math.sin(math.radians(pitch))
@@ -84,7 +80,7 @@ try:
             velocity_ges = math.sqrt(velocity_x**2 + velocity_y**2 + velocity_z**2) #offset
             #print(f"Velocity: {velocity_ges:.2f} m/s")
 
-            #Yaw Winkel mit den korrigierten Beschleunigungswerten berechnen
+            #Yaw Winkel mit den korrigierten Beschleunigungswerten berechnen (Drehung um vertikale Axe(Z-Achse))S
             yaw = calculate_yaw(x_corrected, y_corrected, z_corrected)
             #print(f"Yaw: {yaw:.2f}°")
 
