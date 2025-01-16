@@ -13,12 +13,7 @@ touch1 = 15
 
 #starten
 starten = TouchPad(Pin(touch1))
-TOUCH_THRESHHOLD = 500
-
-# Anfangsgeschwindigkeit
-velocity_x = 0.0
-velocity_y = 0.0
-velocity_z = 0.0
+TOUCH_THRESHHOLD = 500 #Testwert echter Wert muss noch herausgefunden werden
 
 # Zeitvariable für Integration
 prev_time = time.ticks_ms()
@@ -36,12 +31,6 @@ def calculate_velocity(acceleration, delta_time):
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('', 80))
 s.listen(5)'''
-
-def calculate_angles(x, y, z):
-    # Berechne Pitch und Roll
-    pitch = math.degrees(math.atan2(x, math.sqrt(y**2 + z**2)))
-    roll = math.degrees(math.atan2(y, math.sqrt(x**2 + z**2)))
-    return pitch, roll
 
 def calculate_velocity(acceleration, delta_time):
     # Numerische Integration zur Geschwindigkeitsberechnung
@@ -67,30 +56,30 @@ try:
             print(f"Delta Time: {delta_time:.2f}")
             prev_time = current_time
 
-            pitch, roll = calculate_angles(x, y, z)
+            pitch, roll = imu.RP_calculate(x, y, z)
 
-                # Schwerkraftkompensation
+            # Schwerkraftkompensation anhand pitch und roll Winkel
             gravity_x = 9.81 * math.sin(math.radians(pitch))
             gravity_y = 9.81 * math.sin(math.radians(roll))
             gravity_z = 9.81 * math.cos(math.radians(pitch)) * math.cos(math.radians(roll))
-                #print(gravity_z)                                           
+            #print(gravity_z)                                           
             x_corrected = x - gravity_x
             y_corrected = y - gravity_y
             if z < 0:
                 z_corrected = z + gravity_z
             else: 
                 z_corrected = z - gravity_z
-                #print(z_corrected)
+            #print(z_corrected)
 
             gravity_ges = math.sqrt(gravity_x**2 + gravity_y**2 + gravity_z**2)
 
             accelaration_ges = math.sqrt(x_corrected**2 + y_corrected**2 + z_corrected**2)
-                    # Beschleunigungswerte speichern
+            # Beschleunigungswerte speichern
             acceleration_history.append((x_corrected, y_corrected, z_corrected, delta_time))
             if len(acceleration_history) > 20:
-                acceleration_history.pop(0)
+                acceleration_history.pop(0) # wenn die Liste länger als 20 Werte ist, den ersten Wert entfernen
 
-                # Geschwindigkeit über die letzten 20 Werte berechnen
+            # Geschwindigkeit über die letzten 20 Werte berechnen
             velocity_x = 0.0
             velocity_y = 0.0
             velocity_z = 0.0
@@ -99,10 +88,10 @@ try:
                 velocity_y += calculate_velocity(ay, dt)
                 velocity_z += calculate_velocity(az, dt)
 
-                # Gesamtgeschwindigkeit als Vektor
+            # Gesamtgeschwindigkeit als Vektor
             velocity_ges = math.sqrt(velocity_x**2 + velocity_y**2 + velocity_z**2) #offset
 
-                #print(f"Velocity: {velocity_ges:.2f} m/s")
+            #print(f"Velocity: {velocity_ges:.2f} m/s")
 
             time.sleep(0.01)
 except KeyboardInterrupt: 
