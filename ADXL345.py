@@ -1,4 +1,5 @@
 import math
+import time
 
 class ADXL345_I2C:
 
@@ -50,3 +51,6 @@ class ADXL345_I2C:
         roll = math.atan2(y , z) * 57.3
         pitch = math.atan2((- x) , math.sqrt(y * y + z * z)) * 57.3
         return roll,pitch
+    
+   
+        return x_offset, y_offset, z_offset
