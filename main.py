@@ -20,15 +20,6 @@ def calculate_velocity(acceleration, delta_time):
     velocity = acceleration*delta_time
     return velocity
 
-'''def web_page():
-    f = open('index.html')
-    html = f.read()
-    f.close()
-    return html
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(('', 80))
-s.listen(5)'''
-
 def calculate_angles(x, y, z):
     # Berechne Pitch und Roll
     pitch = math.degrees(math.atan2(x, math.sqrt(y**2 + z**2)))
