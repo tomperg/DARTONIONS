@@ -52,23 +52,5 @@ class ADXL345_I2C:
         pitch = math.atan2((- x) , math.sqrt(y * y + z * z)) * 57.3
         return roll,pitch
     
-    def calibrate_imu(self, samples=100):
-        x_offset = 1
-        y_offset = 1
-        z_offset = 1
-
-        for _ in range(samples):
-            x, y, z = self.xValue, self.yValue, self.zValue
-            x_offset *= x
-            y_offset *= y
-            z_offset *= z
-            time.sleep(0.01)  # Wartezeit zwischen den Messungen
-
-        x_offset = x_offset ** (1 / samples)
-        y_offset = y_offset ** (1 / samples)
-        z_offset = z_offset ** (1 / samples)
-
-        # Korrigiere die Offsets, damit x: 0, y: 0 und z: 9.81 herauskommen
-        z_offset /= 9.81
-
+   
         return x_offset, y_offset, z_offset
