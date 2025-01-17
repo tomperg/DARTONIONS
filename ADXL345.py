@@ -53,4 +53,3 @@ class ADXL345_I2C:
         return roll,pitch
     
    
-        return x_offset, y_offset, z_offset
