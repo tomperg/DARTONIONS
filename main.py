@@ -66,9 +66,9 @@ try:
             velocity_y = 0.0
             velocity_z = 0.0
             for ax, ay, az, dt in acceleration_history:
-                velocity_x += calculate_velocity(x_corrected, delta_time)
-                velocity_y += calculate_velocity(y_corrected, delta_time)
-                velocity_z += calculate_velocity(z_corrected, delta_time)
+                velocity_x += calculate_velocity(ax, dt)
+                velocity_y += calculate_velocity(ay, dt)
+                velocity_z += calculate_velocity(az, dt)
 
             # Gesamtgeschwindigkeit als Vektor
             velocity_ges = math.sqrt(velocity_x**2 + velocity_y**2 + velocity_z**2) #offset
