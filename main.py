@@ -20,10 +20,6 @@ TOUCH_THRESHHOLD = 500 #Testwert echter Wert muss noch herausgefunden werden
 prev_time = time.ticks_ms()
 acceleration_history = []
 
-def calculate_velocity(acceleration, delta_time):
-    velocity = acceleration*delta_time
-    return velocity
-
 '''def web_page():
     f = open('index.html')
     html = f.read()
@@ -47,10 +43,8 @@ try:
             x, y, z = imu.xValue*0.039, imu.yValue*0.039+0.7 , imu.zValue*0.039 -1.5 #offset
             print(f"X: {x}")
 
-                #Berechnung der Beschleunigung der einzelnen Achsen 
-
-
             imu_ges = math.sqrt(x**2 + y**2 + z**2)
+            #print(imu_ges)
 
             current_time = time.ticks_ms()
             delta_time = time.ticks_diff(current_time, prev_time) / 1000.0
