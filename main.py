@@ -75,7 +75,7 @@ try:
             #print(f"Velocity: {velocity_ges:.2f} m/s")
 
             #Yaw Winkel mit den korrigierten Beschleunigungswerten berechnen (Drehung um vertikale Axe(Z-Achse))S
-            yaw = calculate_yaw(x_corrected, y_corrected, z_corrected)
+            yaw = calculate_yaw(x_corrected, y_corrected)
             #print(f"Yaw: {yaw:.2f}°")
 
             time.sleep(0.01)
