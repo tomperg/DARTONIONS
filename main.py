@@ -21,19 +21,6 @@ prev_time = time.ticks_ms()
 acceleration_history = []
 
 def calculate_velocity(acceleration, delta_time):
-    velocity = acceleration*delta_time
-    return velocity
-
-'''def web_page():
-    f = open('index.html')
-    html = f.read()
-    f.close()
-    return html
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(('', 80))
-s.listen(5)'''
-
-def calculate_velocity(acceleration, delta_time):
     # Numerische Integration zur Geschwindigkeitsberechnung
     return acceleration * delta_time
 
