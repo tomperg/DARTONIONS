@@ -24,8 +24,6 @@ def calculate_velocity(acceleration, delta_time):
     # Numerische Integration zur Geschwindigkeitsberechnung
     return acceleration * delta_time
 
-# Initialisierte Werte für den Filter
-prev_x_corrected, prev_y_corrected, prev_z_corrected = 0, 0, 0
 
 try:
     while True:
@@ -35,7 +33,6 @@ try:
             print(f"X: {x}")
 
             imu_ges = math.sqrt(x**2 + y**2 + z**2)
-            #print(imu_ges)
 
             current_time = time.ticks_ms()
             delta_time = time.ticks_diff(current_time, prev_time) / 1000.0
