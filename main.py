@@ -1,5 +1,4 @@
 from machine import I2C, Pin, TouchPad
-import socket
 from ADXL345 import ADXL345_I2C
 import math
 import time
@@ -32,7 +31,7 @@ try:
             x, y, z = imu.xValue*0.039, imu.yValue*0.039+0.7 , imu.zValue*0.039 -1.5 #offset
             print(f"X: {x}")
 
-            imu_ges = math.sqrt(x**2 + y**2 + z**2)
+            #imu_ges = math.sqrt(x**2 + y**2 + z**2)
 
             current_time = time.ticks_ms()
             delta_time = time.ticks_diff(current_time, prev_time) / 1000.0
@@ -54,9 +53,9 @@ try:
                 z_corrected = z - gravity_z
             #print(z_corrected)
 
-            gravity_ges = math.sqrt(gravity_x**2 + gravity_y**2 + gravity_z**2)
+            #gravity_ges = math.sqrt(gravity_x**2 + gravity_y**2 + gravity_z**2)
 
-            accelaration_ges = math.sqrt(x_corrected**2 + y_corrected**2 + z_corrected**2)
+            #accelaration_ges = math.sqrt(x_corrected**2 + y_corrected**2 + z_corrected**2)
             # Beschleunigungswerte speichern
             acceleration_history.append((x_corrected, y_corrected, z_corrected, delta_time))
             if len(acceleration_history) > 20:
@@ -67,9 +66,9 @@ try:
             velocity_y = 0.0
             velocity_z = 0.0
             for ax, ay, az, dt in acceleration_history:
-                velocity_x += calculate_velocity(ax, dt)
-                velocity_y += calculate_velocity(ay, dt)
-                velocity_z += calculate_velocity(az, dt)
+                velocity_x += calculate_velocity(x_corrected, delta_time)
+                velocity_y += calculate_velocity(y_corrected, delta_time)
+                velocity_z += calculate_velocity(z_corrected, delta_time)
 
             # Gesamtgeschwindigkeit als Vektor
             velocity_ges = math.sqrt(velocity_x**2 + velocity_y**2 + velocity_z**2) #offset
