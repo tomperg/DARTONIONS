@@ -23,6 +23,16 @@ def calculate_velocity(acceleration, delta_time):
     # Numerische Integration zur Geschwindigkeitsberechnung
     return acceleration * delta_time
 
+'''def web_page():
+    f = open('index.html')
+    html = f.read()
+    f.close()
+    return html
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 80))
+s.listen(5)'''
+
+
 
 try:
     while True:
