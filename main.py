@@ -28,10 +28,10 @@ def calculate_relative_angles():
 
     # Werte von beiden Sensoren lesen
     accel1 = mpu1.get_accel()
-    roll1, pitch1 = calculate_angles(accel1)
+    roll1, _ = calculate_angles(accel1)
 
     accel2 = mpu2.get_accel()
-    roll2, pitch2 = calculate_angles(accel2)
+    roll2, _ = calculate_angles(accel2)
 
     # Relative Werte berechnen
     relativeroll = roll1 - roll2
