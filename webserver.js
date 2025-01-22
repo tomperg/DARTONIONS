@@ -1,6 +1,9 @@
 let currentPlayer = 1;
 let p1Score = 501;
 let p2Score = 501;
+let currentDarts = 0; // Anzahl der Darts des aktuellen Spielers
+const maxDartsPerTurn = 3; // Maximale Darts pro Spieler pro Runde
+const totalPlayers = 2; // Anzahl der Spieler (z. B. 2 Spieler)
 
 function createNumberButtons() {
   const singles = document.getElementById('singles');
@@ -16,34 +19,27 @@ function createNumberButtons() {
     singles.appendChild(btn);
   }
   
-  // Bull's Eye
+  // Bull
   const bull25 = document.createElement('button');
   bull25.textContent = '25';
   bull25.id = 'single25';
   bull25.className = 'number-button';
   bull25.onclick = () => updateScore(25 * currentMultiplier);
   singles.appendChild(bull25);
-  
-  const bull50 = document.createElement('button');
-  bull50.textContent = '50';
-  bull50.id = 'single50';
-  bull50.className = 'number-button';
-  bull50.onclick = () => updateScore(50 * currentMultiplier);
-  singles.appendChild(bull50);
 
   // Modifiers
   const doubleBtn = document.createElement('button');
   doubleBtn.textContent = 'Double';
   doubleBtn.id = 'double';
   doubleBtn.className = 'modifier-button';
-  doubleBtn.onclick = () => setMultiplier(2);
+  doubleBtn.onclick = () => toggleModifier(2,doubleBtn);
   modifiers.appendChild(doubleBtn);
 
   const tripleBtn = document.createElement('button');
   tripleBtn.textContent = 'Triple';
   tripleBtn.id = 'triple';
   tripleBtn.className = 'modifier-button';
-  tripleBtn.onclick = () => setMultiplier(3);
+  tripleBtn.onclick = () => toggleModifier(3,tripleBtn);
   modifiers.appendChild(tripleBtn);
 }
 
@@ -63,8 +59,19 @@ function setMultiplier(multiplier) {
   console.log(`Current multiplier set to: ${multiplier}`);
 }
 
+function switchPlayer() {
+  currentPlayer = currentPlayer === 1 ? 2 : 1;
+  document.getElementById('p1').classList.toggle('active');
+  document.getElementById('p2').classList.toggle('active');
+}
 
 function updateScore(points) {
+  if (points === 75) {
+    console.error("Triple cannot be applied to 25.");
+    alert("Triple cannot be applied to 25.");
+    return;
+  }
+
   const scoreElement = currentPlayer === 1 ? document.getElementById('count1') : document.getElementById('count2');
   const currentScore = currentPlayer === 1 ? p1Score : p2Score;
   
@@ -92,14 +99,33 @@ function updateScore(points) {
     
     // Setze den Multiplikator zurück auf 1
     currentMultiplier = 1;
+    currentDarts++;
+    // Prüfe, ob der Spieler drei Darts geworfen hat
+    if (currentDarts >= maxDartsPerTurn) {
+      // Wechsle den Spieler
+      switchPlayer();
+      currentDarts = 0; // Reset der Dart-Anzahl für den neuen Spieler
+    }
   }
 }
 
-function switchPlayer() {
-  currentPlayer = currentPlayer === 1 ? 2 : 1;
-  document.getElementById('p1').classList.toggle('active');
-  document.getElementById('p2').classList.toggle('active');
-}
+
+function toggleModifier(multiplier, button) {
+  if (currentMultiplier === multiplier) {
+    // Falls der aktuelle Modifier aktiv ist, zurücksetzen
+    currentMultiplier = 1;
+    button.classList.remove('active');
+  } else {
+    // Falls ein anderer Modifier aktiv ist, aktualisieren
+    const modifierButtons = document.querySelectorAll('.modifier-button');
+    modifierButtons.forEach(btn => btn.classList.remove('active'));
+
+    currentMultiplier = multiplier;
+    button.classList.add('active');
+  }
+  }
+
+
 
 function resetGame() {
   p1Score = 501;
