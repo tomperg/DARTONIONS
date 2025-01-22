@@ -1,26 +1,44 @@
 from machine import Pin, I2C
 import time
-import mpu9250
+import math
+from math import atan2, degrees, sqrt
+from MPU6050 import MPU6050
 
-# I2C initialisieren
-i2c = I2C(scl=Pin(22), sda=Pin(21), freq=400000)  # SCL auf GPIO22, SDA auf GPIO21
+# I²C-Konfiguration für den ESP32
+i2c = I2C(0, scl=Pin(22), sda=Pin(21))  # Passen Sie die GPIOs an, falls nötig
 
-# MPU9250 initialisieren
-imu = mpu9250.MPU9250(i2c)
+# MPU6050-Klasse (falls nicht vorhanden, verwenden Sie eine Bibliothek oder erweitern Sie diese)
 
-# Warten, bis der Sensor stabil ist
-time.sleep(1)
+# Zwei MPU6050-Module initialisieren
+mpu1 = MPU6050(i2c, addr=0x68)  # Modul mit Adresse 0x68
+mpu2 = MPU6050(i2c, addr=0x69)  # Modul mit Adresse 0x69
 
-while True:
-    # Auslesen der Beschleunigungs- und Gyroskopdaten
-    accel = imu.accel
-    gyro = imu.gyro
-    mag = imu.mag
+def calculate_angles(accel_data):
+    ax = accel_data['x']
+    ay = accel_data['y']
+    az = accel_data['z']
 
-    # Ausgabe der Sensordaten
-    print("Accelerometer:", accel)
-    print("Gyroscope:", gyro)
-    print("Magnetometer:", mag)
-    
-    # Kurze Pause
-    time.sleep(1)
+    roll = degrees(atan2(ay, sqrt(ax ** 2 + az ** 2)))
+    pitch = degrees(atan2(-ax, sqrt(ay ** 2 + az ** 2)))
+    return roll, pitch
+
+# Hauptprogramm
+try:
+    while True:
+        accell1 = mpu1.get_accel()
+        gyro1 = mpu1.get_gyro()
+        roll1, pitch1 = calculate_angles(accell1)
+
+        accell2 = mpu2.get_accel()
+        gyro2 = mpu2.get_gyro()
+        roll2, pitch2 = calculate_angles(accell2)
+
+        relativeroll = roll1 - roll2
+        relativepitch = pitch1 - pitch2
+
+        print("Relativer Roll: {:.2f}°".format(relativeroll))
+        
+
+        time.sleep(0.1)  # 100 ms Verzögerung
+except KeyboardInterrupt:
+    print("Messung beendet")
