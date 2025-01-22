@@ -1,469 +1,130 @@
-var playerOne = 501;
-var playerTwo = 501;
-var playerThree = 501;
-var playerFour = 501;
-var p1 = true;
-var p2 = false;
-var doubleInPlayerOne;
-var doubleInPlayerTwo;
-var hitDoubleInPlayerOne;
-var hitDoubleInPlayerTwo;
-var counterPlayerOne = 0;
-var counterPlayerTwo = 0;
-var lastDartPlayerOne;
-var lastDartPlayerTwo;
-var threeDartsPlayerOne = [];
-var threeDartsPlayerTwo = [];
-var allDartsPlayerOne = [];
-var allDartsPlayerTwo = [];
-var p1DoubleIn = false;
-var p1DoubleOut = false;
-var p2DoubleIn = false;
-var p2DoubleOut = false;
-var p1DoubleInHit = false;
-var p2DoubleInHit = false;
-var p1DoubleOutHit = false;
-var p2DoubleOutHit = false;
-var namePlayerOne = "Player One";
-var namePlayerTwo = "Player Two";
-var resultPlayerOneDoubleInChecked;
-var resultPlayerTwoDoubleInChecked;
+let currentPlayer = 1;
+let p1Score = 501;
+let p2Score = 501;
 
-class Player {
-  constructor(
-    name,
-    points,
-    counter,
-    isTrue,
-    lastThreeDarts,
-    average,
-    lastDart,
-    allDarts,
-    doubleIn,
-    doubleInHit,
-    doubleOut,
-    doubleOutHit
-  ) {
-    this.name = name;
-    this.points = points;
-    this.counter = counter;
-    this.isTrue = isTrue;
-    this.lastThreeDarts = lastThreeDarts;
-    this.average = average;
-    this.lastDart = lastDart;
-    this.allDarts = allDarts;
-    this.doubleIn = doubleIn;
-    this.doubleInHit = doubleInHit;
-    this.doubleOut = doubleOut;
-    this.doubleOutHit = doubleOutHit;
-    this.mastersIn = mastersIn;
-    this.mastersInHit = mastersInHit;
-    this.mastersOut = mastersOut;
-    this.mastersOutHit = mastersOutHit;
+function createNumberButtons() {
+  const singles = document.getElementById('singles');
+  const modifiers = document.getElementById('modifiers');
+
+  // Singles
+  for(let i = 1; i <= 20; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.id = `single${i}`;
+    btn.className = 'number-button';
+    btn.onclick = () => updateScore(i * currentMultiplier);
+    singles.appendChild(btn);
   }
+  
+  // Bull's Eye
+  const bull25 = document.createElement('button');
+  bull25.textContent = '25';
+  bull25.id = 'single25';
+  bull25.className = 'number-button';
+  bull25.onclick = () => updateScore(25 * currentMultiplier);
+  singles.appendChild(bull25);
+  
+  const bull50 = document.createElement('button');
+  bull50.textContent = '50';
+  bull50.id = 'single50';
+  bull50.className = 'number-button';
+  bull50.onclick = () => updateScore(50 * currentMultiplier);
+  singles.appendChild(bull50);
+
+  // Modifiers
+  const doubleBtn = document.createElement('button');
+  doubleBtn.textContent = 'Double';
+  doubleBtn.id = 'double';
+  doubleBtn.className = 'modifier-button';
+  doubleBtn.onclick = () => setMultiplier(2);
+  modifiers.appendChild(doubleBtn);
+
+  const tripleBtn = document.createElement('button');
+  tripleBtn.textContent = 'Triple';
+  tripleBtn.id = 'triple';
+  tripleBtn.className = 'modifier-button';
+  tripleBtn.onclick = () => setMultiplier(3);
+  modifiers.appendChild(tripleBtn);
 }
 
-function doubleOut(points) {
-  if (p1DoubleOut === true) {
-    if (points == playerOne) {
-      p1DoubleOutHit = true;
-    }
-  }
-}
-/** 
-namePlayerOne = JSON.parse(localStorage.getItem("nameP1"));
-namePlayerTwo = JSON.parse(localStorage.getItem("nameP2"));
+let currentMultiplier = 1;
 
-p1DoubleIn = JSON.parse(localStorage.getItem("p1DoubleIn"));
-p2DoubleIn = JSON.parse(localStorage.getItem("p2DoubleIn"));
-p1DoubleOut = JSON.parse(localStorage.getItem("p1DoubleOut"));
-p2DoubleOut = JSON.parse(localStorage.getItem("p2DoubleOut"));
+function setMultiplier(multiplier) {
+  currentMultiplier = multiplier;
 
-console.log(p1DoubleInI, p2DoubleInI, p1DoubleOutI, p2DoubleOutI);
+  // Entferne die aktive Klasse von allen Modifier-Buttons
+  const modifierButtons = document.querySelectorAll('.modifier-button');
+  modifierButtons.forEach(btn => btn.classList.remove('active'));
 
-document.querySelector("#playerOneName").innerHTML = namePlayerOne;
-document.querySelector("#playerTwoName").innerHTML = namePlayerTwo;
-localStorage.clear();
+  // Füge die aktive Klasse zum geklickten Button hinzu
+  const activeButton = multiplier === 2 ? document.getElementById('double') : document.getElementById('triple');
+  activeButton.classList.add('active');
 
-**/
-//next player blau
-
-//Masters Out, Double Out, Average größer machen
-
-function getPlayerNames() {
-  namePlayerOne = document.querySelector("#nameInputP1").value;
-  namePlayerTwo = document.querySelector("#nameInputP2").value;
-  document.querySelector("#playerOneName").innerHTML = namePlayerOne;
-  document.querySelector("#playerTwoName").innerHTML = namePlayerTwo;
+  console.log(`Current multiplier set to: ${multiplier}`);
 }
 
-document.querySelector("#submitName").onclick = function () {
-  getPlayerNames(), getDoubleInFromForm();
-};
 
-function getDoubleInFromForm() {
-  let resultPlayerOne = document.querySelector("#doubleInPlayerOne");
-  let resultPlayerTwo = document.querySelector("#doubleInPlayerTwo");
-  if (resultPlayerOne.checked) {
-    p1DoubleIn = true;
-  }
-  if (resultPlayerTwo.checked) {
-    p2DoubleIn = true;
-  }
-}
-
-function getDoubleOutForm() {
-  let resultPlayerOne = document.querySelector("'doubleOutPlayerOne");
-  let resultPlayerTwo = document.querySelector("'doubleOutPlayerTwo");
-  if (resultPlayerOne.checked) {
-    p1DoubleOut = true;
-  }
-  if (resultPlayerTwo.checked) {
-    p1DoubleOut = true;
-  }
-}
-
-function getCurrentPlayer() {
-  if (p1 === true) {
-    return "p1";
-  } else {
-    return "p2";
-  }
-}
-
-function checkDoubleInWasHit(player) {
-  if (player == "p1") {
-    if (p1DoubleIn === false && p1DoubleInHit === true) {
-      return true;
+function updateScore(points) {
+  const scoreElement = currentPlayer === 1 ? document.getElementById('count1') : document.getElementById('count2');
+  const currentScore = currentPlayer === 1 ? p1Score : p2Score;
+  
+  if (currentScore - points >= 0) {
+    scoreElement.classList.add('updating');
+    
+    if (currentPlayer === 1) {
+      p1Score -= points;
+      scoreElement.textContent = p1Score;
     } else {
-      return false;
+      p2Score -= points;
+      scoreElement.textContent = p2Score;
     }
-  } else if (player == "p2") {
-    if (p2DoubleIn === false && p2DoubleInHit === true) {
-      return true;
-    } else {
-      return false;
+
+    setTimeout(() => {
+      scoreElement.classList.remove('updating');
+    }, 300);
+
+    if (currentScore - points === 0) {
+      alert(`Spieler ${currentPlayer} hat gewonnen!`);
+      resetGame();
     }
+    const modifierButtons = document.querySelectorAll('.modifier-button');
+    modifierButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Setze den Multiplikator zurück auf 1
+    currentMultiplier = 1;
   }
 }
 
-function checkDoubleInIsHit(isHit) {
-  let player = getCurrentPlayer();
-  if (p1DoubleIn == true && player == "p1") {
-    if (isHit === true) {
-      p1DoubleInHit = true;
-      p1DoubleIn = false;
-    } else {
-      return;
-    }
-  }
-  if (p2DoubleIn === true && player == "p2") {
-    if (isHit === true) {
-      p2DoubleInHit = true;
-      p2DoubleIn = false;
-    } else {
-      return;
-    }
-  }
+function switchPlayer() {
+  currentPlayer = currentPlayer === 1 ? 2 : 1;
+  document.getElementById('p1').classList.toggle('active');
+  document.getElementById('p2').classList.toggle('active');
 }
 
-function getAverageDarts(allDarts, threeDarts) {
-  let allDartsLength = allDarts.length;
-  if (allDartsLength == 0) {
-    allDarts.push(threeDarts[0]);
-  }
-  let totalSum = 0;
-  for (let i in allDarts) {
-    totalSum += allDarts[i];
-  }
-  let average = totalSum / allDartsLength;
-  return Math.round((average + Number.EPSILON) * 100) / 100;
+function resetGame() {
+  p1Score = 501;
+  p2Score = 501;
+  currentPlayer = 1;
+  document.getElementById('count1').textContent = p1Score;
+  document.getElementById('count2').textContent = p2Score;
+  document.getElementById('p1').classList.add('active');
+  document.getElementById('p2').classList.remove('active');
 }
 
-document.querySelector("#nextgame").onclick = function () {
-  newGame();
-};
-function newGame() {
-  playerOne = 501;
-  playerTwo = 501;
-  threeDartsPlayerOne = [];
-  threeDartsPlayerTwo = [];
-  allDartsPlayerOne = [];
-  allDartsPlayerTwo = [];
-  counterPlayerOne = 0;
-  counterPlayerTwo = 0;
-  p1 = true;
-  p2 = false;
-  document.getElementById("count1").innerHTML = playerOne;
-  document.getElementById("count2").innerHTML = playerTwo;
-  document.querySelector("#nextPlayer").innerText = "";
-  document.querySelector("#dartsPlayerOne").innerHTML = "";
-  document.querySelector("#dartsPlayerTwo").innerHTML = "";
-  document.querySelector("#allDartsCounterPlayerOne").innerText = "";
-  document.querySelector("#allDartsCounterPlayerTwo").innerText = "";
-  document.getElementById("p1").style.color = "yellow";
-  document.getElementById("p2").style.color = "white";
-}
-
-document.querySelector("#undoDarts").onclick = function () {
-  undoLastDart();
-};
-function undoLastDart() {
-  if (p1 === true && !counterPlayerOne == 0) {
-    playerOne += threeDartsPlayerOne[counterPlayerOne - 1];
-    counterPlayerOne -= 1;
-    document.getElementById("count1").innerHTML = playerOne;
-    threeDartsPlayerOne.pop();
-    allDartsPlayerOne.pop();
-    let average;
-    if (playerOne !== 501) {
-      average = getAverageDarts(allDartsPlayerOne, threeDartsPlayerOne);
-    } else {
-      average = 0;
-    }
-    document.querySelector("#dartsPlayerOne").innerHTML = threeDartsPlayerOne;
-    document.querySelector("#allDartsCounterPlayerOne").innerText = average;
-  } else if (p2 === true && !counterPlayerTwo == 0) {
-    playerTwo += threeDartsPlayerTwo[counterPlayerTwo - 1];
-    counterPlayerTwo -= 1;
-    document.getElementById("count2").innerHTML = playerTwo;
-    threeDartsPlayerTwo.pop();
-    allDartsPlayerTwo.pop();
-    let average = getAverageDarts(allDartsPlayerTwo, threeDartsPlayerTwo);
-    document.querySelector("#dartsPlayerTwo").innerHTML = threeDartsPlayerTwo;
-    document.querySelector("#allDartsCounterPlayerOne").innerText = average;
-  }
-  //bug wenn beide auf 0 und noch nix geworfen, crash aber nur bei first round
-  //first if for Player 2
-  if (
-    p1 === true &&
-    counterPlayerTwo == 0 &&
-    p2 === false &&
-    counterPlayerOne == 0 &&
-    playerTwo !== 501
-  ) {
-    p2 = true;
-    p1 = false;
-    counterPlayerTwo = 2;
-    playerTwo += lastDartPlayerTwo;
-    document.getElementById("count2").innerHTML = playerTwo;
-    threeDartsPlayerTwo.pop();
-
-    allDartsPlayerTwo.pop();
-    let average = getAverageDarts(allDartsPlayerTwo, threeDartsPlayerTwo);
-    document.querySelector("#allDartsCounterPlayerTwo").innerText = average;
-    changePlayerColor();
-    document.querySelector("#dartsPlayerTwo").innerHTML = threeDartsPlayerTwo;
-    document.querySelector("#nextPlayer").innerText = "";
-  }
-
-  if (
-    p2 === true &&
-    counterPlayerTwo == 0 &&
-    p1 === false &&
-    counterPlayerOne == 0 &&
-    playerOne !== 501
-  ) {
-    p2 = false;
-    p1 = true;
-    counterPlayerOne = 2;
-    playerOne += lastDartPlayerOne;
-    document.getElementById("count1").innerHTML = playerOne;
-    threeDartsPlayerOne.pop();
-    allDartsPlayerOne.pop();
-    let average = getAverageDarts(allDartsPlayerOne, threeDartsPlayerOne);
-    changePlayerColor();
-    document.querySelector("#allDartsCounterPlayerOne").innerText = average;
-    document.querySelector("#dartsPlayerOne").innerHTML = threeDartsPlayerOne;
-    document.querySelector("#nextPlayer").innerText = "";
-  }
-}
-
-function checkDoubleIn(doubleIn, hitDoubleIn) {}
-
-function changePlayer(player) {
-  if (player === 1) {
-    p1 = false;
-    p2 = true;
-    counterPlayerOne = 0;
-  } else {
-    p2 = false;
-    p1 = true;
-    counterPlayerTwo = 0;
-  }
-}
-
-function changePlayerButton() {
-  if (p1 === true) {
-    p1 = false;
-    p2 = true;
-    changePlayerColor();
-    threeDartsPlayerOne = [];
-    threeDartsPlayerTwo = [];
-    counterPlayerOne = 0;
-    document.querySelector("#dartsPlayerOne").innerHTML = threeDartsPlayerOne;
-    document.querySelector("#nextPlayer").innerText =
-      "Next player is " + namePlayerTwo;
-    document.getElementById("p1").style.color = "white";
-    document.getElementById("p2").style.color = "yellow";
-  } else {
-    p1 = true;
-    p2 = false;
-    changePlayerColor();
-    threeDartsPlayerOne = [];
-    threeDartsPlayerTwo = [];
-    counterPlayerTwo = 0;
-    document.querySelector("#dartsPlayerTwo").innerHTML = threeDartsPlayerTwo;
-    document.querySelector("#nextPlayer").innerText =
-      "Next player is " + namePlayerOne;
-    document.getElementById("p2").style.color = "white";
-    document.getElementById("p1").style.color = "yellow";
-  }
-}
-
-function addThrowToList(dart, player) {
-  if (player == 1) {
-    threeDartsPlayerOne.push(dart);
-    allDartsPlayerOne.push(dart);
-    document.querySelector("#dartsPlayerOne").innerHTML = threeDartsPlayerOne;
-  }
-  if (player == 2) {
-    threeDartsPlayerTwo.push(dart);
-    allDartsPlayerTwo.push(dart);
-    document.querySelector("#dartsPlayerTwo").innerHTML = threeDartsPlayerTwo;
-  }
-}
-
-//player name einfügen
-function checkWin(points, player) {
-  if (points == 0) {
-    document.querySelector("#nextPlayer").innerText = player + " has won";
-  }
-}
-
-function checkZeroPoints(points) {
-  if (points == 0) {
-    return true;
-  }
-}
-document.getElementById("p1").style.color = "yellow";
-
-function changePlayerColor() {
-  if (p1 === true) {
-    document.getElementById("p1").style.color = "yellow";
-    document.getElementById("p2").style.color = "white";
-  }
-  if (p2 === true) {
-    document.getElementById("p1").style.fontSize = 100;
-    document.getElementById("p1").style.color = "white";
-    document.getElementById("p2").style.color = "yellow";
-  }
-}
-
-function changePoints(num) {
-  document.querySelector("#nextPlayer").innerText = "";
-  if (p1 === true) {
-    if (p1DoubleOutHit === true) {
-      document.querySelector("#nextPlayer").innerText =
-        namePlayerOne + " has won";
-      win = true;
-      addThrowToList(num, 1);
-      document.querySelector("#count1").innerHTML = playerOne;
-    }
-    if (
-      checkDoubleInWasHit("p1") == true ||
-      (p1DoubleIn === false && p1DoubleInHit === false)
-    ) {
-      lastDartPlayerTwo = 0;
-      addThrowToList(num, 1);
-      let average = getAverageDarts(allDartsPlayerOne, threeDartsPlayerOne);
-      document.querySelector("#dartsPlayerTwo").innerHTML = "";
-      document.querySelector("#allDartsCounterPlayerOne").innerText = average;
-      threeDartsPlayerTwo = [];
-      lastDartPlayerOne = num;
-      if (playerOne < num) {
-        changePlayer(1);
-        document.querySelector("#nextPlayer").innerText =
-          "Next player is " + namePlayerTwo;
-        return;
-      }
-      changePlayerColor();
-
-      playerOne -= num;
-      counterPlayerOne++;
-      if (checkZeroPoints(playerOne)) {
-        checkWin(playerOne, "Player One");
-        //playerOne += num;
-      }
-    }
-  }
-
-  if (p2 === true) {
-    if (
-      checkDoubleInWasHit("p2") == true ||
-      (p2DoubleIn === false && p2DoubleInHit === false)
-    ) {
-      lastDartPlayerOne = 0;
-      addThrowToList(num, 2);
-      let average = getAverageDarts(allDartsPlayerTwo, threeDartsPlayerTwo);
-      document.querySelector("#dartsPlayerOne").innerHTML = "";
-      document.querySelector("#allDartsCounterPlayerTwo").innerText = average;
-      threeDartsPlayerOne = [];
-      lastDartPlayerTwo = num;
-      if (playerTwo < num) {
-        changePlayer(2);
-        document.querySelector("#nextPlayer").innerText =
-          "Next player is " + namePlayerOne;
-        return;
-      }
-      changePlayerColor();
-      playerTwo -= num;
-      counterPlayerTwo++;
-      if (checkZeroPoints(playerTwo)) {
-        checkWin(playerTwo, "Player Two");
-      }
-    }
-  }
-
-  if (counterPlayerOne == 3) {
-    changePlayer(1);
-    document.querySelector("#nextPlayer").innerText =
-      "Next player is " + namePlayerTwo;
-    changePlayerColor();
-    counterPlayerOne = 0;
-  }
-  if (counterPlayerTwo == 3) {
-    changePlayer(2);
-    document.querySelector("#nextPlayer").innerText =
-      "Next player is " + namePlayerOne;
-    changePlayerColor();
-    counterPlayerTwo = 0;
-  }
-  document.getElementById("count1").innerHTML = playerOne;
-  document.getElementById("count2").innerHTML = playerTwo;
-}
-
-document.querySelector("#nextPlayerButton").onclick = function () {
-  changePlayerButton();
-};
-
-
-const singlePoints = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 50];
-const doublePoints = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-const triplePoints = [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
-
-singlePoints.forEach(point => {
-    document.querySelector(`#single${point}`).onclick = () => changePoints(point);
+// Event Listeners
+document.getElementById('setupForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  document.getElementById('startScreen').style.display = 'none';
+  document.getElementById('gameScreen').style.display = 'block';
+  
+  const p1Name = document.getElementById('player1').value;
+  const p2Name = document.getElementById('player2').value;
+  document.getElementById('playerOneName').textContent = p1Name;
+  document.getElementById('playerTwoName').textContent = p2Name;
 });
 
-doublePoints.forEach(point => {
-    document.querySelector(`#double${point}`).onclick = () => {
-        changePoints(point * 2);
-        checkDoubleInIsHit(true);
-        doubleOut(point * 2);
-    };
-});
+document.getElementById('nextPlayerButton').addEventListener('click', switchPlayer);
+document.getElementById('nextgame').addEventListener('click', resetGame);
 
-triplePoints.forEach(point => {
-    document.querySelector(`#triple${point}`).onclick = () => changePoints(point * 3);
-});
+// Initialisierung
+createNumberButtons();
