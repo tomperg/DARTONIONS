@@ -10,14 +10,11 @@ from MPU6050 import MPU6050
 i2c = I2C(0, scl=Pin(22), sda=Pin(21))
 
 # Zwei MPU6050-Sensoren initialisieren
-mpu1 = MPU6050(i2c, addr=0x69)
+mpu1 = MPU6050(i2c, addr=0x69) #AD0 auf vcc für andere Adresse
 mpu2 = MPU6050(i2c, addr=0x68)
 
 # Globale Variablen
-#gyro_winkel = {'pitch': 0.0, 'roll': 0.0}  # Orientierung basierend auf Gyro
-#alpha = 0.98  # Komplementärfilter-Konstante
 last_relative_roll = None
-#velocity = {'x': 0.0, 'y': 0.0, 'z': 0.0}  # Geschwindigkeit
 prev_time = None  # Für Delta-T
 velocity_reset = False  # Geschwindigkeit zurücksetzen
 
@@ -39,7 +36,7 @@ def touch_interrupt_handler(pin):
         accel1 = mpu1.get_accel()
         gyro1 = mpu1.get_gyro()
 
-        # Schwerkraft entfernen
+        # Schwerkraft vom Handgelenk IMU entfernen
         accel1_no_gravity = remove_gravity_with_gyro(accel1, gyro1, dt)
 
         # Geschwindigkeit berechnen

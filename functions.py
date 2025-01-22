@@ -4,7 +4,7 @@ import time
 
 gyro_angle = {'pitch': 0.0, 'roll': 0.0}  # Orientierung basierend auf Gyro
 alpha = 0.98  # Komplementärfilter-Konstante
-velocity = {'x': 0.0, 'y': 0.0, 'z': 0.0}  # Geschwindigkeit
+velocity = {'x': 0.0, 'y': 0.0, 'z': 0.0}
 velocity_reset = False
 #functions we need in our main.py file
 def update_orientation_with_gyro(gyro, dt):
@@ -48,7 +48,7 @@ def update_velocity(accel_no_gravity, dt):
 
     # Bei Bedarf Geschwindigkeit zurücksetzen
     if velocity_reset:
-        velocity = {'x': 0.0, 'y': 0.0, 'z': 0.0}
+        velocity = {'x': 0.0, 'y': 0.0, 'z': 0.0}           #überprüfen ob das auch in der main.py funktioniert!!!!!!!!
         velocity_reset = False
 
 # Funktion zur Winkelberechnung
