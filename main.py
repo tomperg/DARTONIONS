@@ -2,6 +2,8 @@ from machine import Pin, I2C
 import time
 import math
 from functions import *
+import socket 
+import os 
 
 # MPU6050-Klasse importieren
 from MPU6050 import MPU6050
