@@ -57,3 +57,8 @@ def calculate_angles(accel):
     pitch = math.degrees(math.atan2(x, math.sqrt(y**2 + z**2)))
     roll = math.degrees(math.atan2(y, math.sqrt(x**2 + z**2)))
     return roll, pitch
+
+# Funktion zur Geschwindigkeitsrücksetzung um drift zu verhindern
+def reset_velocity():
+    global velocity
+    velocity = {'x': 0.0, 'y': 0.0, 'z': 0.0}

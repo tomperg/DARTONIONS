@@ -22,6 +22,8 @@ velocity_reset = False  # Geschwindigkeit zurücksetzen
 def touch_interrupt_handler(pin):
     global last_relative_roll, prev_time, velocity_reset
 
+    reset_velocity() # Geschwindigkeit zurücksetzen
+
     print("Kontakt erkannt! Schleife gestartet.")
     
     # Initiale Zeit festlegen
