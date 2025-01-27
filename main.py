@@ -4,10 +4,11 @@ import math
 from functions import *
 import socket 
 import os 
+import network 
+import json
 
 # MPU6050-Klasse importieren
 from MPU6050 import MPU6050
-
 # I²C initialisieren
 i2c = I2C(0, scl=Pin(22), sda=Pin(21))
 
@@ -15,13 +16,23 @@ i2c = I2C(0, scl=Pin(22), sda=Pin(21))
 mpu1 = MPU6050(i2c, addr=0x69) #AD0 auf vcc für andere Adresse
 mpu2 = MPU6050(i2c, addr=0x68)
 
+# Lade HTML-Datei
+def load_html(file_name):
+    try:
+        with open(file_name, "r") as file:
+            return file.read()
+    except Exception as e:
+        print("Fehler beim Laden der HTML-Datei:", e)
+        return "<h1>Fehler beim Laden der Seite</h1>"
+
+# Webserver starten
 def web_page():
 
     f = open('webserver.html')
     html = f.read()
     f.close()
     return html
-
+    
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('', 80))
@@ -30,6 +41,7 @@ s.listen(5)
 # Globale Variablen
 last_relative_roll = None
 prev_time = None  # Für Delta-T
+velocity = {"x": 0, "y": 0, "z": 0}  # Initialisierung
 velocity_reset = False  # Geschwindigkeit zurücksetzen
 
 # Interrupt-Handler
@@ -84,6 +96,37 @@ touch_pin.irq(trigger=Pin.IRQ_FALLING, handler=touch_interrupt_handler)
 # Hauptschleife
 try:
     while True:
-        time.sleep(1)  # Programm bleibt aktiv
+        conn, addr = s.accept()
+        print(f"Verbindung von {addr}")
+
+        # HTTP-Anfrage empfangen
+        request = conn.recv(1024).decode()
+
+        # Prüfen, ob die Anfrage '/data' enthält
+        if "/data" in request:
+            # JSON-Daten vorbereiten
+            mpu_data = {
+                "last_relative_roll": round(last_relative_roll, 2) if last_relative_roll is not None else None,
+                "velocity": {
+                    "x": round(velocity['x'], 2),
+                    "y": round(velocity['y'], 2),
+                    "z": round(velocity['z'], 2),
+                }
+            }
+            response = json.dumps(mpu_data)
+            conn.send('HTTP/1.1 200 OK\n')
+            conn.send('Content-Type: application/json\n')
+            conn.send('Connection: close\n\n')
+            conn.sendall(response.encode())
+        else:
+            # HTML-Seite laden und senden
+            response = load_html("webserver.html")
+            conn.send('HTTP/1.1 200 OK\n')
+            conn.send('Content-Type: text/html\n')
+            conn.send('Connection: close\n\n')
+            conn.sendall(response.encode())
+
+        conn.close()
+        time.sleep(1)  # Warteschleife
 except KeyboardInterrupt:
     print("Programm beendet.")
