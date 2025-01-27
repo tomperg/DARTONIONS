@@ -15,6 +15,18 @@ i2c = I2C(0, scl=Pin(22), sda=Pin(21))
 mpu1 = MPU6050(i2c, addr=0x69) #AD0 auf vcc für andere Adresse
 mpu2 = MPU6050(i2c, addr=0x68)
 
+def web_page():
+
+    f = open('webserver.html')
+    html = f.read()
+    f.close()
+    return html
+
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(('', 80))
+s.listen(5)
+
 # Globale Variablen
 last_relative_roll = None
 prev_time = None  # Für Delta-T
