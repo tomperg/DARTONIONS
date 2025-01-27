@@ -1,164 +1,213 @@
-/* Vorheriges CSS beibehalten */
 :root {
-    --primary: #2c3e50;
-    --secondary: #3498db;
-    --accent: #e74c3c;
-    --background: #ecf0f1;
-    --text: #2c3e50;
-  }
+  --primary: #2c3e50;
+  --secondary: #3498db;
+  --accent: #e74c3c;
+  --background: #ecf0f1;
+  --text: #2c3e50;
+}
 
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #2c3e50, #3498db);
-    min-height: 100vh;
-    color: var(--text);
-  }
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #2c3e50, #3498db);
+  min-height: 100vh;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  box-sizing: border-box;
+}
 
+.start-screen {
+  width: 100%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.start-screen h1 {
+  color: var(--primary);
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  word-wrap: break-word;
+}
+
+.player-setup {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.player-field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.player-field label {
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.player-field input[type="text"] {
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.game-options {
+  display: flex;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.option-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.game-screen {
+  display: none;
+  padding: 2rem;
+  width: 100%;
+  max-width: 1200px;
+  box-sizing: border-box;
+}
+
+.scoreboard {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.player-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.player-card.active {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.2);
+  border: 3px solid var(--accent);
+}
+
+.score {
+  font-size: 3rem;
+  font-weight: bold;
+  color: var(--primary);
+  margin: 1rem 0;
+  transition: all 0.3s ease;
+}
+
+.score.updating {
+  color: var(--accent);
+  transform: scale(1.1);
+}
+
+.darts-thrown {
+  color: var(--secondary);
+  font-size: 1.2rem;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+button {
+  background: var(--secondary);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  background: #2980b9;
+}
+
+.number-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.modifier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.number-grid button {
+  aspect-ratio: 1;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.modifier-grid button {
+  background-color: #e67e22;
+  font-weight: bold;
+}
+
+.modifier-grid button:hover {
+  background-color: #d35400;
+}
+
+.modifier-grid button.active {
+  background-color: #f1c40f;
+  color: #2c3e50;
+  border: 2px solid #f39c12;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .start-screen {
-    max-width: 600px;
-    margin: 50px auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-  }
-
-  .start-screen h1 {
-    color: var(--primary);
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .player-setup {
-    display: grid;
-    gap: 1.5rem;
-  }
-
-  .player-field {
-    display: grid;
-    gap: 0.5rem;
-  }
-
-  .player-field label {
-    font-weight: 600;
-    color: var(--primary);
-  }
-
-  .player-field input[type="text"] {
-    padding: 0.75rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-  }
-
-  .game-options {
-    display: flex;
-    gap: 1rem;
-    margin: 1.5rem 0;
-  }
-
-  .option-group {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .game-screen {
-    display: none;
-    padding: 2rem;
+    margin: 20px;
+    padding: 1.5rem;
   }
 
   .scoreboard {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .player-card {
-    background: white;
-    padding: 2rem;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    text-align: center;
-    transition: transform 0.3s ease;
-  }
-
-  .player-card.active {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.2);
-    border: 3px solid var(--accent);
-  }
-
-  .score {
-    font-size: 4rem;
-    font-weight: bold;
-    color: var(--primary);
-    margin: 1rem 0;
-    transition: all 0.3s ease;
-  }
-
-  .score.updating {
-    color: var(--accent);
-    transform: scale(1.1);
-  }
-
-  .darts-thrown {
-    color: var(--secondary);
-    font-size: 1.2rem;
+    grid-template-columns: 1fr;
   }
 
   .controls {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  button {
-    background: var(--secondary);
-    color: white;
-    border: none;
-    padding: 1rem 2rem;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  button:hover {
-    transform: translateY(-2px);
-    background: #2980b9;
+    grid-template-columns: 1fr;
   }
 
   .number-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-    gap: 0.5rem;
-    margin-top: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); /* Breitere Mindestgröße */
+    gap: 1.5rem; /* Erhöhe den Abstand zwischen den Buttons */
+    margin-bottom: 1rem;
+    padding: 0.5rem; /* Abstand von den Rändern */
+  }
+  
+
+  .modifier-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
-  .number-button {
-    aspect-ratio: 1;
-    font-size: 1.2rem;
-    font-weight: bold;
+  .score {
+    font-size: 2.5rem;
   }
-
-  .modifier-button.active {
-    background-color: #FFD700; /* Goldfarbe */
-    color: black;
-    font-weight: bold;
-    border: 2px solid #FF8C00;
-  }
-
-  @media (max-width: 768px) {
-    .scoreboard {
-      grid-template-columns: 1fr;
-    }
-    
-    .number-grid {
-      grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-    }
-  }
+}
