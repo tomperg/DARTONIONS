@@ -1,213 +1,307 @@
-:root {
-  --primary: #2c3e50;
-  --secondary: #3498db;
-  --accent: #e74c3c;
-  --background: #ecf0f1;
-  --text: #2c3e50;
+/* =================================
+   VARIABLES & ROOT SETTINGS
+   ================================= */
+   :root {
+    /* Hauptfarben */
+    --primary: #2c3e50;    /* Dunkelblau für Hauptelemente */
+    --secondary: #3498db;  /* Hellblau für interaktive Elemente */
+    --accent: #e74c3c;     /* Rot für Hervorhebungen/Aktionen */
+    --background: #ecf0f1; /* Heller Hintergrund */
+    --text: #2c3e50;      /* Standardtextfarbe */
+
+    /* Zusätzliche Farben für spezifische Zustände */
+    --button-hover: #2980b9;
+    --modifier-button: #e67e22;
+    --modifier-active: #f1c40f;
+    --modifier-border: #f39c12;
 }
 
+/* =================================
+   BASIC LAYOUT & TYPOGRAPHY
+   ================================= */
 body {
-  margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: linear-gradient(135deg, #2c3e50, #3498db);
-  min-height: 100vh;
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 1rem;
-  box-sizing: border-box;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    min-height: 100vh;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 
+/* =================================
+   START SCREEN STYLES
+   ================================= */
 .start-screen {
-  width: 100%;
-  max-width: 600px;
-  margin: 50px auto;
-  padding: 2rem;
-  background: white;
-  border-radius: 15px;
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
+/* Titel auf dem Startbildschirm */
 .start-screen h1 {
-  color: var(--primary);
-  text-align: center;
-  font-size: 2.5rem;
-  margin-bottom: 2rem;
-  word-wrap: break-word;
+    color: var(--primary);
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    word-wrap: break-word;
 }
 
+/* =================================
+   PLAYER SETUP FORM
+   ================================= */
 .player-setup {
-  display: grid;
-  gap: 1.5rem;
+    display: grid;
+    gap: 1.5rem;
 }
 
 .player-field {
-  display: grid;
-  gap: 0.5rem;
+    display: grid;
+    gap: 0.5rem;
 }
 
+/* Beschriftungen für Eingabefelder */
 .player-field label {
-  font-weight: 600;
-  color: var(--primary);
+    font-weight: 600;
+    color: var(--primary);
 }
 
+/* Spieler-Namenseingabe */
 .player-field input[type="text"] {
-  padding: 0.75rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 8px;
-  font-size: 1rem;
+    padding: 0.75rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
 }
 
+/* Spieloptionen (Double In/Out) */
 .game-options {
-  display: flex;
-  gap: 1rem;
-  margin: 1.5rem 0;
-  flex-wrap: wrap;
-  justify-content: center;
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .option-group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
+/* =================================
+   GAME SCREEN STYLES
+   ================================= */
 .game-screen {
-  display: none;
-  padding: 2rem;
-  width: 100%;
-  max-width: 1200px;
-  box-sizing: border-box;
+    display: none; /* Wird per JavaScript auf 'block' gesetzt */
+    padding: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    box-sizing: border-box;
 }
 
+/* =================================
+   SCOREBOARD STYLES
+   ================================= */
 .scoreboard {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2rem;
-  margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
 }
 
+/* Spielerkarten */
 .player-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  text-align: center;
-  transition: transform 0.3s ease;
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
 }
 
+/* Aktiver Spieler Hervorhebung */
 .player-card.active {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(231, 76, 60, 0.2);
-  border: 3px solid var(--accent);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.2);
+    border: 3px solid var(--accent);
 }
 
+/* Punkteanzeige */
 .score {
-  font-size: 3rem;
-  font-weight: bold;
-  color: var(--primary);
-  margin: 1rem 0;
-  transition: all 0.3s ease;
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--primary);
+    margin: 1rem 0;
+    transition: all 0.3s ease;
 }
 
+/* Animation beim Punkteupdate */
 .score.updating {
-  color: var(--accent);
-  transform: scale(1.1);
+    color: var(--accent);
+    transform: scale(1.1);
 }
 
+/* Geworfene Darts Anzeige */
 .darts-thrown {
-  color: var(--secondary);
+    color: var(--secondary);
+    font-size: 1.2rem;
+}
+
+.legs-counter {
   font-size: 1.2rem;
+  color: var(--secondary);
+  margin-top: 0.5rem;
 }
 
+/* =================================
+   CONTROL BUTTONS
+   ================================= */
 .controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
 }
 
+/* Allgemeine Button-Styles */
 button {
-  background: var(--secondary);
-  color: white;
-  border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.2s;
+    background: var(--secondary);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 button:hover {
-  transform: translateY(-2px);
-  background: #2980b9;
+    transform: translateY(-2px);
+    background: var(--button-hover);
 }
 
+/* =================================
+   NUMBER GRID & MODIFIERS
+   ================================= */
 .number-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
 .modifier-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 0.5rem;
-}
-
-.number-grid button {
-  aspect-ratio: 1;
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-.modifier-grid button {
-  background-color: #e67e22;
-  font-weight: bold;
-}
-
-.modifier-grid button:hover {
-  background-color: #d35400;
-}
-
-.modifier-grid button.active {
-  background-color: #f1c40f;
-  color: #2c3e50;
-  border: 2px solid #f39c12;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .start-screen {
-    margin: 20px;
-    padding: 1.5rem;
-  }
-
-  .scoreboard {
-    grid-template-columns: 1fr;
-  }
-
-  .controls {
-    grid-template-columns: 1fr;
-  }
-
-  .number-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); /* Breitere Mindestgröße */
-    gap: 1.5rem; /* Erhöhe den Abstand zwischen den Buttons */
-    margin-bottom: 1rem;
-    padding: 0.5rem; /* Abstand von den Rändern */
-  }
-  
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.5rem;
+}
 
-  .modifier-grid {
+/* Zahlen-Buttons */
+.number-button {
+    aspect-ratio: 1;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+/* Double/Triple Buttons */
+.modifier-button {
+    background-color: var(--modifier-button);
+    font-weight: bold;
+}
+
+.modifier-button:hover {
+    background-color: #d35400;
+}
+
+.modifier-button.active {
+    background-color: var(--modifier-active);
+    color: var(--primary);
+    border: 2px solid var(--modifier-border);
+}
+
+/* =================================
+   STATISTICS MODAL
+   ================================= */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+}
+
+/* Modal Schließen-Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+/* Statistik-Container */
+.stats-container {
+    display: grid;
     grid-template-columns: 1fr 1fr;
-  }
+    gap: 20px;
+    margin-top: 20px;
+}
 
-  .score {
-    font-size: 2.5rem;
-  }
+/* =================================
+   RESPONSIVE DESIGN
+   ================================= */
+@media (max-width: 768px) {
+    /* Anpassungen für kleine Bildschirme */
+    .start-screen {
+        margin: 20px;
+        padding: 1.5rem;
+    }
+    
+    .scoreboard {
+        grid-template-columns: 1fr;
+    }
+    
+    .controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .number-grid {
+        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+        gap: 1.5rem;
+        padding: 0.5rem;
+    }
+    
+    .score {
+        font-size: 2.5rem;
+    }
+    
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
 }

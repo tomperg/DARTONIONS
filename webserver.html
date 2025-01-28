@@ -1,84 +1,103 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html>
-  
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="webserver.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dart Score</title>
+    <link rel="stylesheet" href="webserver.css">
 </head>
 <body>
-  <div class="start-screen" id="startScreen">
-    <h1>🎯 Dart Score</h1>
-
-    <form class="player-setup" id="setupForm">
-      <div class="player-field">
-        <label for="player1">Spieler 1</label>
-        <input type="text" id="player1" required placeholder="Name eingeben">
-        <div class="game-options">
-          <div class="option-group">
-            <input type="checkbox" id="doubleInP1">
-            <label for="doubleInP1">Double In</label>
-          </div>
-          <div class="option-group">
-            <input type="checkbox" id="doubleOutP1">
-            <label for="doubleOutP1">Double Out</label>
-          </div>
+    <div class="start-screen" id="startScreen">
+        <h1>🎯 Dart Score</h1>
+        
+        <form class="player-setup" id="setupForm">
+            <div class="player-field">
+                <label for="player1">Spieler 1</label>
+                <input type="text" id="player1" required placeholder="Name eingeben">
+                <div class="game-options">
+                    <div class="option-group">
+                        <input type="checkbox" id="doubleInP1">
+                        <label for="doubleInP1">Double In</label>
+                    </div>
+                    <div class="option-group">
+                        <input type="checkbox" id="doubleOutP1">
+                        <label for="doubleOutP1">Double Out</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="player-field">
+                <label for="player2">Spieler 2</label>
+                <input type="text" id="player2" required placeholder="Name eingeben">
+                <div class="game-options">
+                    <div class="option-group">
+                        <input type="checkbox" id="doubleInP2">
+                        <label for="doubleInP2">Double In</label>
+                    </div>
+                    <div class="option-group">
+                        <input type="checkbox" id="doubleOutP2">
+                        <label for="doubleOutP2">Double Out</label>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="primary">Spiel starten</button>
+        </form>
+    </div>
+    
+    <div class="game-screen" id="gameScreen">
+        <div class="scoreboard">
+          <div class="player-card active" id="p1">
+            <h2 id="playerOneName">Eric</h2>
+            <div class="score" id="count1">501</div>
+            <div class="legs-counter" id="legsPlayerOne">0</div>
         </div>
-      </div>
-
-      <div class="player-field">
-        <label for="player2">Spieler 2</label>
-        <input type="text" id="player2" required placeholder="Name eingeben">
-        <div class="game-options">
-          <div class="option-group">
-            <input type="checkbox" id="doubleInP2">
-            <label for="doubleInP2">Double In</label>
-          </div>
-          <div class="option-group">
-            <input type="checkbox" id="doubleOutP2">
-            <label for="doubleOutP2">Double Out</label>
-          </div>
+        
+        <div class="player-card" id="p2">
+            <h2 id="playerTwoName">Dieter</h2>
+            <div class="score" id="count2">501</div>
+            <div class="legs-counter" id="legsPlayerTwo">0</div>
         </div>
-      </div>
-
-      <button type="submit" class="primary">Spiel starten</button>
-    </form>
-  </div>
-
-  <div class="game-screen" id="gameScreen">
-    <div class="scoreboard">
-      <div class="player-card active" id="p1">
-        <h2 id="playerOneName">Spieler 1</h2>
-        <div class="score" id="count1">501</div>
-        <div class="darts-thrown">
-          <div id="dartsPlayerOne"></div>
-          <div id="allDartsCounterPlayerOne">0</div>
         </div>
-      </div>
-
-      <div class="player-card" id="p2">
-        <h2 id="playerTwoName">Spieler 2</h2>
-        <div class="score" id="count2">501</div>
-        <div class="darts-thrown">
-          <div id="dartsPlayerTwo"></div>
-          <div id="allDartsCounterPlayerTwo">0</div>
+        
+        <div class="controls">
+            <button id="nextPlayerButton">Nächster Spieler</button>
+            <button id="undoDarts">Wurf zurück</button>
+            <button id="nextgame">Neues Spiel</button>
+            <button id="showStats">Statistiken anzeigen</button>
         </div>
-      </div>
+        
+        <div class="number-grid" id="singles">
+            <!-- Zahlen werden dynamisch eingefügt -->
+        </div>
+        <div class="modifier-grid" id="modifiers">
+            <!-- Modifier werden dynamisch eingefügt -->
+        </div>
     </div>
 
-    <div class="controls">
-      <button id="nextPlayerButton">Nächster Spieler</button>
-      <button id="undoDarts">Wurf zurück</button>
-      <button id="nextgame">Neues Spiel</button>
+    <!-- Statistik Modal -->
+    <div id="statsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Spielerstatistiken</h2>
+            <div class="stats-container">
+                <div id="player1Stats">
+                    <h3>Statistiken Spieler 1</h3>
+                    <p>3-Dart Average: <span id="p1avg">-</span></p>
+                    <p>Höchste 3-Dart-Kombination: <span id="p1high">-</span></p>
+                    <p>Anzahl Würfe: <span id="p1games">-</span></p>
+                </div>
+                <div id="player2Stats">
+                    <h3>Statistiken Spieler 2</h3>
+                    <p>3-Dart Average: <span id="p2avg">-</span></p>
+                    <p>Höchste 3-Dart-Kombination: <span id="p2high">-</span></p>
+                    <p>Anzahl Würfe: <span id="p2games">-</span></p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="number-grid" id="singles">
-      <!-- Zahlen werden dynamisch eingefügt -->
-    </div>
-    <div class="modifier-grid" id="modifiers">
-      <!-- Modifier werden dynamisch eingefügt -->
-    </div>
-  </div>
-  <script src = "webserver.js"></script>
+    <script src="webserver.js"></script>
 </body>
-</html> 
+</html>
