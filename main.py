@@ -9,6 +9,7 @@ import json
 
 # MPU6050-Klasse importieren
 from MPU6050 import MPU6050
+
 # I²C initialisieren
 i2c = I2C(0, scl=Pin(22), sda=Pin(21))
 
@@ -16,24 +17,29 @@ i2c = I2C(0, scl=Pin(22), sda=Pin(21))
 mpu1 = MPU6050(i2c, addr=0x69) #AD0 auf vcc für andere Adresse
 mpu2 = MPU6050(i2c, addr=0x68)
 
-# Lade HTML-Datei
-def load_html(file_name):
+def get_content_type(filename):
+    """Bestimmt den Content-Type basierend auf der Dateierweiterung"""
+    if filename.endswith('.html'):
+        return 'text/html'
+    elif filename.endswith('.css'):
+        return 'text/css'
+    elif filename.endswith('.js'):
+        return 'application/javascript'
+    elif filename.endswith('.json'):
+        return 'application/json'
+    else:
+        return 'text/plain'
+
+def load_file(filename):
+    """Lädt eine Datei und gibt deren Inhalt zurück"""
     try:
-        with open(file_name, "r") as file:
+        with open(filename, "r") as file:
             return file.read()
     except Exception as e:
-        print("Fehler beim Laden der HTML-Datei:", e)
-        return "<h1>Fehler beim Laden der Seite</h1>"
+        print(f"Fehler beim Laden der Datei {filename}:", e)
+        return None
 
-# Webserver starten
-def web_page():
-
-    f = open('webserver.html')
-    html = f.read()
-    f.close()
-    return html
-    
-
+# Socket erstellen und an Port 80 binden
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind(('', 80))
 s.listen(5)
@@ -48,7 +54,7 @@ velocity_reset = False  # Geschwindigkeit zurücksetzen
 def touch_interrupt_handler(pin):
     global last_relative_roll, prev_time, velocity_reset
 
-    reset_velocity() # Geschwindigkeit zurücksetzen
+    #reset_velocity() # Geschwindigkeit zurücksetzen
 
     print("Kontakt erkannt! Schleife gestartet.")
     
@@ -101,9 +107,15 @@ try:
 
         # HTTP-Anfrage empfangen
         request = conn.recv(1024).decode()
-
-        # Prüfen, ob die Anfrage '/data' enthält
-        if "/data" in request:
+        
+        # Extrahiere den angefragten Pfad
+        request_line = request.split('\n')[0]
+        path = request_line.split(' ')[1]
+        
+        if path == "/":
+            # Standardseite
+            filename = "webserver.html"
+        elif path == "/data":
             # JSON-Daten vorbereiten
             mpu_data = {
                 "last_relative_roll": round(last_relative_roll, 2) if last_relative_roll is not None else None,
@@ -118,15 +130,34 @@ try:
             conn.send('Content-Type: application/json\n')
             conn.send('Connection: close\n\n')
             conn.sendall(response.encode())
+            conn.close()
+            continue
         else:
-            # HTML-Seite laden und senden
-            response = load_html("webserver.html")
+            # Entferne führenden Slash
+            filename = path[1:]
+
+        # Datei laden
+        content = load_file(filename)
+        
+        if content is not None:
+            # Content-Type bestimmen
+            content_type = get_content_type(filename)
+            
+            # HTTP-Response senden
             conn.send('HTTP/1.1 200 OK\n')
+            conn.send(f'Content-Type: {content_type}\n')
+            conn.send('Connection: close\n\n')
+            conn.sendall(content.encode())
+        else:
+            # 404 Error senden
+            conn.send('HTTP/1.1 404 Not Found\n')
             conn.send('Content-Type: text/html\n')
             conn.send('Connection: close\n\n')
-            conn.sendall(response.encode())
+            conn.sendall('<h1>404 - Datei nicht gefunden</h1>'.encode())
 
         conn.close()
-        time.sleep(1)  # Warteschleife
+        time.sleep(0.1)  # Kürzere Warteschleife
+
 except KeyboardInterrupt:
     print("Programm beendet.")
+    s.close()
