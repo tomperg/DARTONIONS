@@ -347,7 +347,17 @@ async function fetchData() {
     try {
         const response = await fetch('/data');
         const data = await response.json();
-        updateIMUData(data);
+        
+        // Aktualisiere die Anzeige nur wenn gültige Werte vorhanden sind
+        if (data.last_relative_roll !== null) {
+            document.getElementById('current-angle').textContent = 
+                data.last_relative_roll.toFixed(1);
+        }
+        
+        if (data.velocity && data.velocity.total !== null) {
+            document.getElementById('current-velocity').textContent = 
+                data.velocity.total.toFixed(2);
+        }
     } catch (error) {
         console.error('Fehler beim Abrufen der Daten:', error);
     }
