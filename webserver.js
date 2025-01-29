@@ -15,18 +15,18 @@ let p2Legs = 0;                // Anzahl der gewonnenen Legs von Spieler 2
 const maxDartsPerTurn = 3;     // Maximale Anzahl Darts pro Spieler pro Runde
 const STARTING_SCORE = 501;    // Startpunktzahl für jeden Spieler
 
-// Neue Datenstruktur für die Würfe
+// Datenstrukturen für die Würfe
 let currentGameThrows = {
-    player1: [],  // Jedes Element ist ein Array mit 3 Würfen
+    player1: [], // Jedes Element ist ein Set von 3 Würfen
     player2: []
 };
 
-// Temporärer Speicher für aktuelle Aufnahme
+// Temporärer Speicher für die aktuelle Aufnahme
 let currentSet = {
-    throws: [],
+    throws: [],           // Punktzahlen
     imuData: {
-        angles: [],
-        velocities: []
+        angles: [],       // Winkel der Würfe
+        velocities: []    // Geschwindigkeiten der Würfe
     }
 };
 
@@ -154,9 +154,136 @@ function handleLegWin() {
 }
 
 // ===============================
-// WURF-MANAGEMENT
+// DATEN-MANAGEMENT
 // ===============================
 
+// Speichert neue IMU-Daten
+function addIMUData(angle, velocity) {
+    // Nur speichern wenn noch Platz für Würfe ist
+    if (currentSet.imuData.angles.length < 3) {
+        currentSet.imuData.angles.push(angle);
+        currentSet.imuData.velocities.push(velocity);
+        console.log("IMU Daten hinzugefügt:", { angle, velocity });
+        console.log("Aktuelle IMU Daten:", currentSet.imuData);
+    }
+}
+
+// Erweiterte Statistik-Berechnung
+function calculatePlayerStats(playerNumber) {
+    const sets = currentGameThrows[`player${playerNumber}`];
+    
+    if (sets.length === 0) return {
+        average: 0,
+        highest: 0,
+        numberOfSets: 0,
+        minAngle: 0,
+        maxAngle: 0,
+        avgAngle: 0,
+        minVelocity: 0,
+        maxVelocity: 0,
+        avgVelocity: 0
+    };
+
+    // Berechne Wurf-Statistiken
+    const totalPoints = sets.reduce((sum, set) => sum + set.total, 0);
+    const highest = Math.max(...sets.map(set => set.total));
+    
+    // Sammle alle IMU-Daten
+    const allAngles = sets.flatMap(set => set.imuData.angles).filter(angle => angle != null);
+    const allVelocities = sets.flatMap(set => set.imuData.velocities).filter(velocity => velocity != null);
+    
+    // Berechne IMU-Statistiken
+    const minAngle = allAngles.length > 0 ? Math.min(...allAngles) : 0;
+    const maxAngle = allAngles.length > 0 ? Math.max(...allAngles) : 0;
+    const avgAngle = allAngles.length > 0 ? allAngles.reduce((a, b) => a + b, 0) / allAngles.length : 0;
+    
+    const minVelocity = allVelocities.length > 0 ? Math.min(...allVelocities) : 0;
+    const maxVelocity = allVelocities.length > 0 ? Math.max(...allVelocities) : 0;
+    const avgVelocity = allVelocities.length > 0 ? allVelocities.reduce((a, b) => a + b, 0) / allVelocities.length : 0;
+    
+    return {
+        average: totalPoints / sets.length,
+        highest: highest,
+        numberOfSets: sets.length,
+        minAngle,
+        maxAngle,
+        avgAngle,
+        minVelocity,
+        maxVelocity,
+        avgVelocity
+    };
+}
+
+// Aktualisiert alle Statistiken in der UI
+function updateStats() {
+    const p1Stats = calculatePlayerStats(1);
+    const p2Stats = calculatePlayerStats(2);
+    
+    // Update Standard-Statistiken
+    document.getElementById('p1avg').textContent = p1Stats.average.toFixed(1);
+    document.getElementById('p2avg').textContent = p2Stats.average.toFixed(1);
+    document.getElementById('p1high').textContent = p1Stats.highest;
+    document.getElementById('p2high').textContent = p2Stats.highest;
+    document.getElementById('p1games').textContent = p1Stats.numberOfSets;
+    document.getElementById('p2games').textContent = p2Stats.numberOfSets;
+    
+    // Update IMU-Statistiken
+    document.getElementById('p1angle').textContent = p1Stats.avgAngle.toFixed(1);
+    document.getElementById('p2angle').textContent = p2Stats.avgAngle.toFixed(1);
+    document.getElementById('p1velocity').textContent = p1Stats.avgVelocity.toFixed(2);
+    document.getElementById('p2velocity').textContent = p2Stats.avgVelocity.toFixed(2);
+    
+    // Update Min/Max Anzeigen
+    document.getElementById('p1angle-range').textContent = 
+        `${p1Stats.minAngle.toFixed(1)}° - ${p1Stats.maxAngle.toFixed(1)}°`;
+    document.getElementById('p2angle-range').textContent = 
+        `${p2Stats.minAngle.toFixed(1)}° - ${p2Stats.maxAngle.toFixed(1)}°`;
+    document.getElementById('p1velocity-range').textContent = 
+        `${p1Stats.minVelocity.toFixed(2)} - ${p1Stats.maxVelocity.toFixed(2)}`;
+    document.getElementById('p2velocity-range').textContent = 
+        `${p2Stats.minVelocity.toFixed(2)} - ${p2Stats.maxVelocity.toFixed(2)}`;
+    
+    // Aktualisiere Wurf-Historie
+    updateThrowHistory(1);
+    updateThrowHistory(2);
+}
+
+// Aktualisiert die Wurf-Historie in der UI
+function updateThrowHistory(playerNumber) {
+    const historyContainer = document.getElementById(`p${playerNumber}ThrowHistory`);
+    const throws = currentGameThrows[`player${playerNumber}`];
+    
+    // Leere den Container
+    historyContainer.innerHTML = '';
+    
+    // Füge die letzten 10 Würfe hinzu (neueste zuerst)
+    throws.slice().reverse().slice(0, 10).forEach((set, index) => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        
+        // Formatiere das Datum
+        const date = new Date(set.timestamp);
+        const timeStr = date.toLocaleTimeString();
+        
+        // Erstelle den HTML-Inhalt mit allen verfügbaren Daten
+        const angleStr = set.imuData.angles.map(a => a !== null ? a.toFixed(1) + '°' : '--').join(', ');
+        const velocityStr = set.imuData.velocities.map(v => v !== null ? v.toFixed(2) + ' m/s' : '--').join(', ');
+        
+        historyItem.innerHTML = `
+            <span class="throw-number">#${throws.length - index}</span>
+            <div class="throw-details">
+                <div>Punkte: ${set.throws.join(' + ')} = ${set.total}</div>
+                <div>Winkel: ${angleStr}</div>
+                <div>Geschw.: ${velocityStr}</div>
+            </div>
+            <span class="throw-time">${timeStr}</span>
+        `;
+        
+        historyContainer.appendChild(historyItem);
+    });
+}
+
+// Fügt einen neuen Punktwurf hinzu
 function addThrowToCurrentGame(playerNumber, points) {
     // Füge den Wurf zum aktuellen Set hinzu
     currentSet.throws.push(points);
@@ -174,6 +301,7 @@ function addThrowToCurrentGame(playerNumber, points) {
             timestamp: new Date().toISOString()
         };
         
+        // Füge das Set zur Spielerhistorie hinzu
         currentGameThrows[playerKey].push(throwSet);
         
         // Reset currentSet
@@ -184,47 +312,14 @@ function addThrowToCurrentGame(playerNumber, points) {
                 velocities: []
             }
         };
+        
+        console.log(`Neues Set für Spieler ${playerNumber} gespeichert:`, throwSet);
     }
     
     // Aktualisiere die Statistiken
     updateStats();
 }
 
-// ===============================
-// STATISTIK-FUNKTIONEN
-// ===============================
-
-function calculatePlayerStats(playerNumber) {
-    const sets = currentGameThrows[`player${playerNumber}`];
-    
-    if (sets.length === 0) return {
-        average: 0,
-        highest: 0,
-        numberOfSets: 0
-    };
-
-    const totalPoints = sets.reduce((sum, set) => sum + set.total, 0);
-    const highest = Math.max(...sets.map(set => set.total));
-    
-    return {
-        average: totalPoints / sets.length,
-        highest: highest,
-        numberOfSets: sets.length
-    };
-}
-
-function updateStats() {
-    const p1Stats = calculatePlayerStats(1);
-    const p2Stats = calculatePlayerStats(2);
-    
-    // Update UI
-    document.getElementById('p1avg').textContent = p1Stats.average.toFixed(1);
-    document.getElementById('p2avg').textContent = p2Stats.average.toFixed(1);
-    document.getElementById('p1high').textContent = p1Stats.highest;
-    document.getElementById('p2high').textContent = p2Stats.highest;
-    document.getElementById('p1games').textContent = p1Stats.numberOfSets;
-    document.getElementById('p2games').textContent = p2Stats.numberOfSets;
-}
 
 // ===============================
 // SPIEL-MANAGEMENT
@@ -244,10 +339,6 @@ function resetLeg() {
             angles: [],
             velocities: []
         }
-    };
-    currentGameThrows = {
-        player1: [],
-        player2: []
     };
 }
 
@@ -307,16 +398,30 @@ window.onclick = function(event) {
 // IMU DATEN MANAGEMENT
 // ===============================
 
-function updateIMUData(data) {
-    if (currentSet.imuData.angles.length < 3) {
-        const velocity = Math.sqrt(
-            Math.pow(data.velocity.x, 2) + 
-            Math.pow(data.velocity.y, 2) + 
-            Math.pow(data.velocity.z, 2)
-        );
-        
-        currentSet.imuData.angles.push(data.last_relative_roll);
-        currentSet.imuData.velocities.push(velocity);
+// Event-Handler für neue IMU-Daten vom Server
+async function handleNewIMUData(data) {
+    if (data.last_relative_roll !== null) {
+        document.getElementById('current-angle').textContent = 
+            data.last_relative_roll.toFixed(1);
+            
+        // Berechne Gesamtgeschwindigkeit
+        const velocity = data.velocity.total || 0;
+        document.getElementById('current-velocity').textContent = 
+            velocity.toFixed(2);
+            
+        // Speichere die Daten im currentSet
+        addIMUData(data.last_relative_roll, velocity);
+    }
+}
+
+// Überschreibe die fetchData Funktion
+async function fetchData() {
+    try {
+        const response = await fetch('/data');
+        const data = await response.json();
+        handleNewIMUData(data);
+    } catch (error) {
+        console.error('Fehler beim Abrufen der Daten:', error);
     }
 }
 
@@ -341,27 +446,6 @@ document.getElementById('nextPlayerButton').addEventListener('click', () => {
 });
 
 document.getElementById('nextgame').addEventListener('click', resetGame);
-
-// Daten alle 100ms vom Server abrufen
-async function fetchData() {
-    try {
-        const response = await fetch('/data');
-        const data = await response.json();
-        
-        // Aktualisiere die Anzeige nur wenn gültige Werte vorhanden sind
-        if (data.last_relative_roll !== null) {
-            document.getElementById('current-angle').textContent = 
-                data.last_relative_roll.toFixed(1);
-        }
-        
-        if (data.velocity && data.velocity.total !== null) {
-            document.getElementById('current-velocity').textContent = 
-                data.velocity.total.toFixed(2);
-        }
-    } catch (error) {
-        console.error('Fehler beim Abrufen der Daten:', error);
-    }
-}
 
 // Daten-Abruf starten
 setInterval(fetchData, 100);
