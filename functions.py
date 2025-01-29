@@ -58,14 +58,19 @@ def reset_velocity():
     global velocity
     velocity = {'x': 0.0, 'y': 0.0, 'z': 0.0}
 
-def calculate_velocity_from_gyro(gyro_y, radius=0.25):
+def calculate_velocity_from_gyro(gyro_x, gyro_y, gyro_z, radius=0.25):
     """
-    Berechnet die lineare Geschwindigkeit basierend auf der Winkelgeschwindigkeit um die y-Achse.
+    Berechnet die lineare Geschwindigkeit basierend auf der Winkelgeschwindigkeit um alle Achsen.
     
+    :param gyro_x: Winkelgeschwindigkeit um die x-Achse in Grad/Sekunde
     :param gyro_y: Winkelgeschwindigkeit um die y-Achse in Grad/Sekunde
+    :param gyro_z: Winkelgeschwindigkeit um die z-Achse in Grad/Sekunde
     :param radius: Radius in Metern (Standard: 0.25 m)
     :return: Lineare Geschwindigkeit in m/s
     """
-    omega_rad = gyro_y * (math.pi / 180)  # Umrechnung in rad/s
+    # Winkelgeschwindigkeit in Grad/s in Radiant/s umrechnen
+    omega_rad = math.radians((gyro_x**2 + gyro_y**2 + gyro_z**2)**0.5)  # ω = √(ωx² + ωy² + ωz²) * π/180
+    
+    # Lineare Geschwindigkeit berechnen
     velocity = omega_rad * radius  # v = ω * r
     return velocity

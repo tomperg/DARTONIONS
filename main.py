@@ -148,9 +148,11 @@ def touch_interrupt_handler(pin):
             roll2, _ = calculate_angles(accel2)
             final_angle = roll1 - roll2
             
-            # Berechne die Geschwindigkeit
-            gyro_y = gyro1['y']
-            final_velocity = abs(calculate_velocity_from_gyro(gyro_y))
+            # Berechne die Winkelgeschwindigkeit von mpu1 bei einem Radius von 25 cm
+            final_velocity = calculate_velocity_from_gyro(gyro1["x"], gyro1["y"], gyro1["z"], radius=0.25)
+
+
+
             
             # Speichere die Messwerte
             measured_values["angle"] = final_angle
