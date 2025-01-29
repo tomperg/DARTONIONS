@@ -141,7 +141,25 @@ function updateScore(points) {
     }
 }
 
+// In der handleLegWin Funktion, direkt vor dem Reset:
 function handleLegWin() {
+    // Wenn es ungespeicherte Würfe im aktuellen Set gibt, speichere diese
+    if (currentSet.throws.length > 0) {
+        const playerKey = `player${currentPlayer}`;
+        const throwSet = {
+            throws: [...currentSet.throws],
+            total: currentSet.throws.reduce((a, b) => a + b, 0),
+            imuData: {
+                angles: [...currentSet.imuData.angles],
+                velocities: [...currentSet.imuData.velocities]
+            },
+            timestamp: new Date().toISOString()
+        };
+        
+        // Füge das unvollständige Set zur Spielerhistorie hinzu
+        currentGameThrows[playerKey].push(throwSet);
+    }
+    
     if (currentPlayer === 1) {
         p1Legs++;
         document.getElementById('legsPlayerOne').textContent = p1Legs;
@@ -150,9 +168,31 @@ function handleLegWin() {
         document.getElementById('legsPlayerTwo').textContent = p2Legs;
     }
     alert(`Spieler ${currentPlayer} hat das Leg gewonnen!`);
-    resetLeg();
+    
+    // Reset für das neue Leg
+    p1Score = STARTING_SCORE;
+    p2Score = STARTING_SCORE;
+    document.getElementById('count1').textContent = p1Score;
+    document.getElementById('count2').textContent = p2Score;
+    
+    // Wechsel zum anderen Spieler für das nächste Leg
+    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    document.getElementById('p1').classList.toggle('active');
+    document.getElementById('p2').classList.toggle('active');
+    
+    // Reset des aktuellen Wurfsatzes und Dartzähler
+    currentDarts = 0;
+    currentSet = {
+        throws: [],
+        imuData: {
+            angles: [],
+            velocities: []
+        }
+    };
+    
+    // Aktualisiere die Statistiken nach dem Speichern des letzten Sets
+    updateStats();
 }
-
 // ===============================
 // DATEN-MANAGEMENT
 // ===============================
