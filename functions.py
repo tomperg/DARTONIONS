@@ -46,11 +46,6 @@ def update_velocity(accel_no_gravity, dt):
     velocity['y'] += accel_no_gravity['y'] * dt
     velocity['z'] += accel_no_gravity['z'] * dt
 
-    # Bei Bedarf Geschwindigkeit zurücksetzen
-    if velocity_reset:
-        velocity = {'x': 0.0, 'y': 0.0, 'z': 0.0}           #überprüfen ob das auch in der main.py funktioniert!!!!!!!!
-        velocity_reset = False
-
 # Funktion zur Winkelberechnung
 def calculate_angles(accel):
     x, y, z = accel['x'], accel['y'], accel['z']
@@ -62,3 +57,15 @@ def calculate_angles(accel):
 def reset_velocity():
     global velocity
     velocity = {'x': 0.0, 'y': 0.0, 'z': 0.0}
+
+def calculate_velocity_from_gyro(gyro_y, radius=0.25):
+    """
+    Berechnet die lineare Geschwindigkeit basierend auf der Winkelgeschwindigkeit um die y-Achse.
+    
+    :param gyro_y: Winkelgeschwindigkeit um die y-Achse in Grad/Sekunde
+    :param radius: Radius in Metern (Standard: 0.25 m)
+    :return: Lineare Geschwindigkeit in m/s
+    """
+    omega_rad = gyro_y * (math.pi / 180)  # Umrechnung in rad/s
+    velocity = omega_rad * radius  # v = ω * r
+    return velocity

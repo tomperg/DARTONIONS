@@ -14,8 +14,8 @@ from MPU6050 import MPU6050
 i2c = I2C(0, scl=Pin(22), sda=Pin(21))
 
 # Zwei MPU6050-Sensoren initialisieren
-mpu1 = MPU6050(i2c, addr=0x69) #AD0 auf vcc für andere Adresse
-mpu2 = MPU6050(i2c, addr=0x68)
+mpu1 = MPU6050(i2c, addr=0x68) 
+mpu2 = MPU6050(i2c, addr=0x69) #AD0 auf vcc für andere Adresse
 
 def get_content_type(filename):
     """Bestimmt den Content-Type basierend auf der Dateierweiterung"""
@@ -52,18 +52,16 @@ velocity_reset = False  # Geschwindigkeit zurücksetzen
 
 # Interrupt-Handler
 def touch_interrupt_handler(pin):
-    global last_relative_roll, prev_time, velocity_reset
-
-    #reset_velocity() # Geschwindigkeit zurücksetzen
+    global last_relative_roll, prev_time, velocity, velocity_reset
 
     print("Kontakt erkannt! Schleife gestartet.")
+
+    prev_time = time.ticks_ms() / 1000.0  # Startzeit setzen
     
-    # Initiale Zeit festlegen
-    prev_time = time.ticks_ms() / 1000.0
 
     while not pin.value():  # Prüfen, ob der Schalter geschlossen ist
         current_time = time.ticks_ms() / 1000.0
-        dt = current_time - prev_time
+        dt = max(current_time - prev_time, 0.001)  # Mindestens 1ms, um dt=0 zu verhindern
         prev_time = current_time
 
         # Beschleunigung und Gyro-Daten lesen
@@ -73,7 +71,7 @@ def touch_interrupt_handler(pin):
         # Schwerkraft vom Handgelenk IMU entfernen
         accel1_no_gravity = remove_gravity_with_gyro(accel1, gyro1, dt)
 
-        # Geschwindigkeit berechnen
+        # Geschwindigkeit berechnen (direkt auf globale Variable anwenden)
         update_velocity(accel1_no_gravity, dt)
 
         # Winkel berechnen
@@ -84,16 +82,26 @@ def touch_interrupt_handler(pin):
 
         time.sleep(0.1)  # Schleifenintervall
 
+        # Gyroskop-Daten auslesen
+        gyro1 = mpu1.get_gyro()
+        gyro_y = gyro1['y']  # Winkelgeschwindigkeit um die y-Achse
+
+        # Geschwindigkeit berechnen
+        linear_velocity = calculate_velocity_from_gyro(gyro_y)
+
+        print(f"Winkelgeschwindigkeit: {gyro_y:.2f}°/s")
+        print(f"Berechnete Geschwindigkeit: {linear_velocity:.4f} m/s")
+
     # Wenn der Schalter geöffnet wird
     print("Schalter geöffnet. Schleife beendet.")
     if last_relative_roll is not None:
         print("Letzter relativer Roll: {:.2f}°".format(last_relative_roll))
-    print("Geschwindigkeit: x={:.2f} m/s, y={:.2f} m/s, z={:.2f} m/s".format(
-        velocity['x'], velocity['y'], velocity['z']))
-
-    # Geschwindigkeit zurücksetzen
-    velocity_reset = True
-    time.sleep(0.2)  # Entprellzeit
+    print(f"Winkelgeschwindigkeit: {gyro_y:.2f}°/s")
+    print(f"Berechnete Geschwindigkeit: {linear_velocity:.4f} m/s")
+    #print("Geschwindigkeit: x={:.2f} m/s, y={:.2f} m/s, z={:.2f} m/s".format(
+       # accel1['x'], accel1['y'], accel1['z']))
+    #print(f"Delta Zeit (dt): {dt:.6f} Sekunden")
+    time.sleep(2)  # Entprellzeit
 
 # GPIO für Schalter konfigurieren
 touch_pin = Pin(15, Pin.IN, Pin.PULL_UP)  # GPIO 15 mit internem Pull-Up-Widerstand
