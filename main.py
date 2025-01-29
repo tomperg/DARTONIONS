@@ -71,6 +71,8 @@ def send_sensor_data(conn):
                 "total": round(measured_values["velocity"], 2) if measured_values["velocity"] is not None else 0
             }
         }
+        measured_values["angle"] = None
+        measured_values["velocity"] = None
         response = json.dumps(mpu_data)
         send_response(conn, response, "application/json")
     except Exception as e:
@@ -130,13 +132,8 @@ def touch_interrupt_handler(pin):
     # Entprellen
     time.sleep(0.05)
     
-    # Schalter wurde gedrückt (Pfeil wird gehalten)
-    if not pin.value() and not is_button_pressed:
-        print("Schalter gedrückt - Pfeil wird gehalten")
-        is_button_pressed = True
-        
     # Schalter wurde losgelassen (Pfeil wird geworfen)
-    elif pin.value() and is_button_pressed:
+    if pin.value() and is_button_pressed:
         print("Schalter losgelassen - Pfeil wird geworfen")
         is_button_pressed = False
         
@@ -153,7 +150,7 @@ def touch_interrupt_handler(pin):
             
             # Berechne die Geschwindigkeit
             gyro_y = gyro1['y']
-            final_velocity = abs(calculate_velocity_from_gyro(gyro_y))  # Verwende Absolutwert
+            final_velocity = abs(calculate_velocity_from_gyro(gyro_y))
             
             # Speichere die Messwerte
             measured_values["angle"] = final_angle
@@ -163,6 +160,13 @@ def touch_interrupt_handler(pin):
             
         except Exception as e:
             print(f"Fehler bei der Messung: {e}")
+            measured_values["angle"] = None
+            measured_values["velocity"] = None
+    
+    # Schalter wurde gedrückt (Pfeil wird gehalten)
+    elif not pin.value() and not is_button_pressed:
+        print("Schalter gedrückt - Pfeil wird gehalten")
+        is_button_pressed = True
 
 # GPIO für Schalter konfigurieren
 try:
