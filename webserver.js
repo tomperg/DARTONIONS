@@ -399,8 +399,10 @@ window.onclick = function(event) {
 // ===============================
 
 // Event-Handler für neue IMU-Daten vom Server
+// Event-Handler für neue IMU-Daten vom Server
 async function handleNewIMUData(data) {
     if (data.last_relative_roll !== null) {
+        // Aktualisiere die Anzeige der aktuellen Werte
         document.getElementById('current-angle').textContent = 
             data.last_relative_roll.toFixed(1);
             
@@ -408,9 +410,17 @@ async function handleNewIMUData(data) {
         const velocity = data.velocity.total || 0;
         document.getElementById('current-velocity').textContent = 
             velocity.toFixed(2);
-            
-        // Speichere die Daten im currentSet
-        addIMUData(data.last_relative_roll, velocity);
+    }
+}
+
+// Fügt neue IMU-Daten zum aktuellen Set hinzu
+function addIMUData(angle, velocity) {
+    // Speichere nur wenn der Wurf registriert wurde und Platz ist
+    if (currentSet.imuData.angles.length < 3 && angle !== null && velocity !== null) {
+        currentSet.imuData.angles.push(angle);
+        currentSet.imuData.velocities.push(velocity);
+        console.log("Neue IMU Daten hinzugefügt:", { angle, velocity });
+        console.log("Aktuelle IMU Daten:", currentSet.imuData);
     }
 }
 
@@ -423,6 +433,43 @@ async function fetchData() {
     } catch (error) {
         console.error('Fehler beim Abrufen der Daten:', error);
     }
+}
+
+// Fügt einen neuen Punktwurf hinzu
+function addThrowToCurrentGame(playerNumber, points) {
+    // Füge den Wurf zum aktuellen Set hinzu
+    currentSet.throws.push(points);
+    
+    // Wenn drei Würfe erreicht sind, speichere das Set
+    if (currentSet.throws.length === 3) {
+        const playerKey = `player${playerNumber}`;
+        const throwSet = {
+            throws: [...currentSet.throws],
+            total: currentSet.throws.reduce((a, b) => a + b, 0),
+            imuData: {
+                angles: [...currentSet.imuData.angles],
+                velocities: [...currentSet.imuData.velocities]
+            },
+            timestamp: new Date().toISOString()
+        };
+        
+        // Füge das Set zur Spielerhistorie hinzu
+        currentGameThrows[playerKey].push(throwSet);
+        
+        console.log(`Neues Set für Spieler ${playerNumber} gespeichert:`, throwSet);
+        
+        // Reset currentSet
+        currentSet = {
+            throws: [],
+            imuData: {
+                angles: [],
+                velocities: []
+            }
+        };
+    }
+    
+    // Aktualisiere die Statistiken
+    updateStats();
 }
 
 // ===============================
