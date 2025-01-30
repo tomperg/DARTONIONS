@@ -21,7 +21,7 @@ except Exception as e:
     print(f"Fehler bei der MPU6050-Initialisierung: {e}")
     raise
 
-ledPIN = Pin(13, Pin.OUT)
+led = Pin(13, Pin.OUT)
 
 def get_content_type(filename):
     """Bestimmt den Content-Type basierend auf der Dateierweiterung"""
@@ -123,14 +123,7 @@ measured_values = {        # Gespeicherte Messwerte
     "velocity": None
 }
 
-from machine import Pin
-
-# Definiere die LED-Pin-Nummer
-LED_PIN = 5
-
 # Initialisiere die LED als Ausgang
-led = Pin(LED_PIN, Pin.OUT)
-
 def touch_interrupt_handler(pin):
     global is_button_pressed, last_interrupt_time, measured_values
     
