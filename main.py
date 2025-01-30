@@ -21,7 +21,7 @@ except Exception as e:
     print(f"Fehler bei der MPU6050-Initialisierung: {e}")
     raise
 
-ledPIN = Pin(5, Pin.OUT)
+ledPIN = Pin(13, Pin.OUT)
 
 def get_content_type(filename):
     """Bestimmt den Content-Type basierend auf der Dateierweiterung"""
