@@ -146,13 +146,14 @@ def touch_interrupt_handler(pin):
             # Berechne den Winkel
             roll1, _ = calculate_angles(accel1)
             roll2, _ = calculate_angles(accel2)
-            relativer_roll = roll1 - roll2
+            # Berechnung des relativen Winkels mit Bezug auf die Referenz
+            relativer_roll = roll1 - roll2  
 
-            # Überprüfe, ob accel1["z"] <= 0 oder accel1["z"] > 0 um relativen roll richtig anzuwenden
-            if accel1["z"] <= 0:
-                final_angle = relativer_roll  # Verwende den relativen Rollwinkel
-            else:
-                final_angle = 180 - relativer_roll  # Verwende 180 - relativen Rollwinkel
+            # Überprüfung der z-Beschleunigung, um den richtigen Winkel zu bestimmen
+            if accel1["z"] < 0:   
+                final_angle = 180 - abs(relativer_roll)  
+            else:                 
+                final_angle = abs(relativer_roll)  
             
             # Berechne die Winkelgeschwindigkeit von mpu1 bei einem Radius von 25 cm
             final_velocity = calculate_velocity_from_gyro(gyro1["x"], gyro1["y"], gyro1["z"], radius=0.25)

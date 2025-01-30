@@ -62,15 +62,3 @@ class MPU6050:
             'y': self.read_raw_data(self.GYRO_XOUT_H + 2) / gyro_scale,
             'z': self.read_raw_data(self.GYRO_XOUT_H + 4) / gyro_scale
         }
-
-    def get_temperature(self):
-        """
-        Get the temperature reading from the MPU6050.
-
-        :return: Temperature in degrees Celsius
-        """
-        raw_temp = self.read_raw_data(self.TEMP_OUT_H)
-        return raw_temp / 340.0 + 36.53  # Temperature formula from the datasheet
-    
-
-    
