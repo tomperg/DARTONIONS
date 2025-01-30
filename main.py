@@ -21,6 +21,8 @@ except Exception as e:
     print(f"Fehler bei der MPU6050-Initialisierung: {e}")
     raise
 
+ledPIN = Pin(5, Pin.OUT)
+
 def get_content_type(filename):
     """Bestimmt den Content-Type basierend auf der Dateierweiterung"""
     if filename.endswith('.html'):
@@ -121,6 +123,14 @@ measured_values = {        # Gespeicherte Messwerte
     "velocity": None
 }
 
+from machine import Pin
+
+# Definiere die LED-Pin-Nummer
+LED_PIN = 5
+
+# Initialisiere die LED als Ausgang
+led = Pin(LED_PIN, Pin.OUT)
+
 def touch_interrupt_handler(pin):
     global is_button_pressed, last_interrupt_time, measured_values
     
@@ -168,11 +178,17 @@ def touch_interrupt_handler(pin):
             print(f"Fehler bei der Messung: {e}")
             measured_values["angle"] = None
             measured_values["velocity"] = None
+
+        # Schalte die LED aus, weil der Interrupt beendet ist
+        led.off()
     
     # Schalter wurde gedrückt (Pfeil wird gehalten)
     elif not pin.value() and not is_button_pressed:
         print("Schalter gedrückt - Pfeil wird gehalten")
         is_button_pressed = True
+
+        # Schalte die LED ein, weil der Interrupt aktiv ist
+        led.on()
 
 # GPIO für Schalter konfigurieren
 try:
