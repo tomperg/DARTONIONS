@@ -128,7 +128,7 @@ def touch_interrupt_handler(pin):
     global is_button_pressed, last_interrupt_time, measured_values
     
     current_time = time.ticks_ms()
-    if time.ticks_diff(current_time, last_interrupt_time) < 100:  # Entprellzeit
+    if time.ticks_diff(current_time, last_interrupt_time) < 1000:  # Entprellzeit
         return
     last_interrupt_time = current_time
     
