@@ -132,9 +132,6 @@ def touch_interrupt_handler(pin):
         return
     last_interrupt_time = current_time
     
-    # Entprellen
-    time.sleep(0.05)
-    
     # Schalter wurde losgelassen (Pfeil wird geworfen)
     if pin.value() and is_button_pressed:
         print("Schalter losgelassen - Pfeil wird geworfen")
@@ -145,10 +142,11 @@ def touch_interrupt_handler(pin):
             accel1 = mpu1.get_accel()
             gyro1 = mpu1.get_gyro()
             accel2 = mpu2.get_accel()
+            gyro2 = mpu2.get_gyro()
             
             # Berechne den Winkel
-            roll1, _ = calculate_angles(accel1)
-            roll2, _ = calculate_angles(accel2)
+            roll1 = complementary_filter(gyro1, accel1)
+            roll2 = complementary_filter(gyro2, accel2)
             # Berechnung des relativen Winkels mit Bezug auf die Referenz
             relativer_roll = roll1 - roll2  
 
