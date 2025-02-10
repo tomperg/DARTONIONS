@@ -38,6 +38,14 @@ function createNumberButtons() {
     const singles = document.getElementById('singles');
     const modifiers = document.getElementById('modifiers');
 
+    // Erstelle Button für 0
+    const zeroBtn = document.createElement('button');
+    zeroBtn.textContent = '0';
+    zeroBtn.id = 'single0';
+    zeroBtn.className = 'number-button';
+    zeroBtn.onclick = () => updateScore(0);
+    singles.appendChild(zeroBtn);
+
     // Erstelle Buttons für die Zahlen 1-20
     for(let i = 1; i <= 20; i++) {
         const btn = document.createElement('button');
@@ -50,7 +58,7 @@ function createNumberButtons() {
     
     createBullButton(singles);
     createModifierButtons(modifiers);
-}
+    }
 
 function createBullButton(container) {
     const bull25 = document.createElement('button');
@@ -100,22 +108,43 @@ function switchPlayer() {
 }
 
 function updateScore(points) {
-    if (points === 75) {
-        console.error("Triple cannot be applied to 25.");
-        alert("Triple cannot be applied to 25.");
-        return;
-    }
-
     const scoreElement = currentPlayer === 1 ? 
         document.getElementById('count1') : 
         document.getElementById('count2');
     const currentScore = currentPlayer === 1 ? p1Score : p2Score;
+    const playerRules = gameRules[`player${currentPlayer}`];
     
+    // Erlaube 0 Punkte auch bei Double-In
+    if (points === 0) {
+        addThrowToCurrentGame(currentPlayer, points);
+        currentDarts++;
+        if (currentDarts >= maxDartsPerTurn) {
+            switchPlayer();
+            currentDarts = 0;
+        }
+        return;
+    }
+
+    if (points === 75) {
+        alert("Triple cannot be applied to 25.");
+        return;
+    }
+
+    // Double-In Überprüfung
+    if (currentScore === STARTING_SCORE && playerRules.doubleIn && currentMultiplier !== 2) {
+        alert("Sie müssen mit einem Double beginnen!");
+        return;
+    }
+    
+    // Double-Out Überprüfung
+    if (currentScore - points === 0 && playerRules.doubleOut && currentMultiplier !== 2) {
+        alert("Sie müssen mit einem Double beenden!");
+        return;
+    }
+
     if (currentScore - points >= 0) {
-        // Füge den Wurf zum aktuellen Set hinzu
         addThrowToCurrentGame(currentPlayer, points);
         
-        // Aktualisiere den Score
         if (currentPlayer === 1) {
             p1Score -= points;
             scoreElement.textContent = p1Score;
@@ -474,6 +503,17 @@ async function fetchData() {
 // EVENT LISTENER
 // ===============================
 
+let gameRules = {
+    player1: {
+        doubleIn: false,
+        doubleOut: false
+    },
+    player2: {
+        doubleIn: false,
+        doubleOut: false
+    }
+};
+
 document.getElementById('setupForm').addEventListener('submit', (e) => {
     e.preventDefault();
     document.getElementById('startScreen').style.display = 'none';
@@ -483,7 +523,14 @@ document.getElementById('setupForm').addEventListener('submit', (e) => {
     const p2Name = document.getElementById('player2').value;
     document.getElementById('playerOneName').textContent = p1Name;
     document.getElementById('playerTwoName').textContent = p2Name;
+    
+    // Spielregeln speichern
+    gameRules.player1.doubleIn = document.getElementById('doubleInP1').checked;
+    gameRules.player1.doubleOut = document.getElementById('doubleOutP1').checked;
+    gameRules.player2.doubleIn = document.getElementById('doubleInP2').checked;
+    gameRules.player2.doubleOut = document.getElementById('doubleOutP2').checked;
 });
+
 
 document.getElementById('nextPlayerButton').addEventListener('click', () => {
     switchPlayer();
