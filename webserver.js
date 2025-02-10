@@ -114,7 +114,6 @@ function updateScore(points) {
     const currentScore = currentPlayer === 1 ? p1Score : p2Score;
     const playerRules = gameRules[`player${currentPlayer}`];
     
-    // Erlaube 0 Punkte auch bei Double-In
     if (points === 0) {
         addThrowToCurrentGame(currentPlayer, points);
         currentDarts++;
@@ -130,15 +129,33 @@ function updateScore(points) {
         return;
     }
 
-    // Double-In Überprüfung
     if (currentScore === STARTING_SCORE && playerRules.doubleIn && currentMultiplier !== 2) {
         alert("Sie müssen mit einem Double beginnen!");
         return;
     }
     
-    // Double-Out Überprüfung
     if (currentScore - points === 0 && playerRules.doubleOut && currentMultiplier !== 2) {
         alert("Sie müssen mit einem Double beenden!");
+        return;
+    }
+
+    // Bust Check - Double Out
+    if (playerRules.doubleOut && currentScore - points < 2 && currentScore - points !== 0) {
+        alert("Bust! Sie haben überworfen!");
+        addThrowToCurrentGame(currentPlayer, points); // Speichere den Wurf
+        currentDarts = maxDartsPerTurn;
+        switchPlayer();
+        currentDarts = 0;
+        return;
+    }
+
+    // Normaler Bust Check
+    if (currentScore - points < 0) {
+        alert("Bust! Sie haben überworfen!");
+        addThrowToCurrentGame(currentPlayer, points); // Speichere den Wurf
+        currentDarts = maxDartsPerTurn;
+        switchPlayer();
+        currentDarts = 0;
         return;
     }
 
@@ -537,6 +554,68 @@ document.getElementById('nextPlayerButton').addEventListener('click', () => {
     currentDarts = 0;
 });
 
+// Undo-Button Event Listener hinzufügen
+document.getElementById('undoDarts').addEventListener('click', undoLastThrow);
+
+function undoLastThrow() {
+    if (currentSet.throws.length > 0) {
+        // Entferne den letzten Wurf aus dem currentSet
+        const lastThrow = currentSet.throws.pop();
+        
+        // Entferne auch die entsprechenden IMU-Daten
+        if (currentSet.imuData.angles.length > 0) {
+            currentSet.imuData.angles.pop();
+            currentSet.imuData.velocities.pop();
+        }
+        
+        // Aktualisiere den Score
+        if (currentPlayer === 1) {
+            p1Score += lastThrow;
+            document.getElementById('count1').textContent = p1Score;
+        } else {
+            p2Score += lastThrow;
+            document.getElementById('count2').textContent = p2Score;
+        }
+        
+        // Reduziere die Anzahl der geworfenen Darts
+        currentDarts--;
+        
+        // Aktualisiere die Statistiken
+        updateStats();
+    } else if (currentGameThrows[`player${currentPlayer}`].length > 0) {
+        // Hole das letzte Set
+        const lastSet = currentGameThrows[`player${currentPlayer}`].pop();
+        
+        // Setze die Würfe zurück ins currentSet
+        currentSet.throws = [...lastSet.throws];
+        currentSet.imuData = {
+            angles: [...lastSet.imuData.angles],
+            velocities: [...lastSet.imuData.velocities]
+        };
+        
+        // Entferne den letzten Wurf
+        const lastThrow = currentSet.throws.pop();
+        if (currentSet.imuData.angles.length > 0) {
+            currentSet.imuData.angles.pop();
+            currentSet.imuData.velocities.pop();
+        }
+        
+        // Aktualisiere den Score
+        if (currentPlayer === 1) {
+            p1Score += lastThrow;
+            document.getElementById('count1').textContent = p1Score;
+        } else {
+            p2Score += lastThrow;
+            document.getElementById('count2').textContent = p2Score;
+        }
+        
+        // Setze die Anzahl der Darts auf die Anzahl der verbleibenden Würfe
+        currentDarts = currentSet.throws.length;
+        
+        // Aktualisiere die Statistiken
+        updateStats();
+    }
+}
 document.getElementById('nextgame').addEventListener('click', resetGame);
 
 // Daten-Abruf starten
