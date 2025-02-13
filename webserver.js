@@ -293,7 +293,7 @@ function updateStats() {
     const p1Stats = calculatePlayerStats(1);
     const p2Stats = calculatePlayerStats(2);
     
-    // Update Standard-Statistiken
+    // Updatet Standard-Statistiken
     document.getElementById('p1avg').textContent = p1Stats.average.toFixed(1);
     document.getElementById('p2avg').textContent = p2Stats.average.toFixed(1);
     document.getElementById('p1high').textContent = p1Stats.highest;
@@ -301,7 +301,7 @@ function updateStats() {
     document.getElementById('p1games').textContent = p1Stats.numberOfSets;
     document.getElementById('p2games').textContent = p2Stats.numberOfSets;
     
-    // Update IMU-Statistiken
+    // Updatet IMU-Statistiken
     document.getElementById('p1angle').textContent = p1Stats.avgAngle.toFixed(1);
     document.getElementById('p2angle').textContent = p2Stats.avgAngle.toFixed(1);
     document.getElementById('p1velocity').textContent = p1Stats.avgVelocity.toFixed(2);
